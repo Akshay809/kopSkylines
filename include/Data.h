@@ -15,6 +15,7 @@ public:
 	virtual int compareWith(DataValue&) = 0;
 	virtual void updateTo(DataValue&) = 0;
 	virtual void *objectReference() = 0;
+	virtual void minimize() = 0;
 
 	void updateIfLargerThan(DataValue&);
 	void updateIfSmallerThan(DataValue&);
@@ -24,6 +25,7 @@ class IntDataValue : public DataValue {
 private:
 	int value;
 public:
+	static int min;
 	IntDataValue(int value): value(value) {}
 
 	void *objectReference() { return this; }
@@ -31,12 +33,17 @@ public:
 
 	int compareWith(DataValue&);
 	void updateTo(DataValue&);
+	void minimize() {
+		value = min;
+	}
 };
+int IntDataValue::min = 0;
 
 class DoubleDataValue : public DataValue {
 private:
 	double value;
 public:
+	static double min;
 	DoubleDataValue(double value): value(value) {}
 
 	void *objectReference() { return this; }
@@ -44,22 +51,27 @@ public:
 
 	int compareWith(DataValue&);
 	void updateTo(DataValue&);
+	void minimize() {
+		value = min;
+	}
 };
+double DoubleDataValue::min = 0.0;
 
-
+/*ERROR: Please check*/
 typedef map<string, DataValue> DataMap;
 typedef map<string, DataValue>::iterator DataMapIterator;
 
 
 class DataInstance {
 private:
-	static int totalInstances;
 	int instanceId, objectId, weight;
 	DataObject& Object;
 	DataMap dataStore;
-	DataInstance(const DataInstance&);
+	// DataInstance(const DataInstance&);
 public:
-	DataInstance(int objectId, DataObject& Object): objectId(objectId), Object(Object), instanceId(++totalInstances) {}
+	static int totalInstances;
+	static DataInstance Origin;
+	DataInstance(DataObject& Object): objectId(Object.getID()), Object(Object), instanceId(++totalInstances) {}
 
 	DataInstance& operator= (const DataInstance&);
 
@@ -74,11 +86,10 @@ public:
 	bool isDominatedBy(DataInstance&);
 	void minimizeWRT(DataInstance&);
 	void maximizeWRT(DataInstance&);
+	void minimizeDS();
 };
 
-DataInstance::totalInstances = 0;
-
-typedef vector<DataInstance> instanceSet;
+typedef vector<DataInstance*> instanceSet;
 
 class DataObject {
 private:
@@ -86,9 +97,11 @@ private:
 	instanceSet instances;
 	DataInstance Umin, Umax;
 public:
-	DataObject(int id): id(id), Umin(id, this), Umax(id, this), objectWeight(0) {}
+	static int totalObjects, instancesAdded;
+	static DataObject Origin;
+	DataObject(): id(++totalObjects), Umin(id, this), Umax(id, this), objectWeight(0) {}
 
-	void getID() { return id; }
+	int getID() { return id; }
 	int getObjectWeight() { return objectWeight; }
 
 	void updateCorners();
@@ -101,5 +114,22 @@ public:
 	void removeInstance(int);
 	void removeInstance(DataInstance&);
 };
+
+typedef vector<DataObject*> objectSet;
+
+int DataObject::totalObjects = 0;
+DataObject DataObject::Origin;
+int DataObject::instancesAdded = 0;
+int DataInstance::totalInstances = 0;
+DataInstance DataInstance::Origin(DataObject::Origin);
+
+bool isDominated(DataInstance& u, instanceSet& set) {
+	instanceSet::iterator itr = set.begin();
+	while(itr!=set.end()) {
+		if(u.isDominatedBy(**itr++));
+			return true;
+	}
+	return false;
+}
 
 #endif
