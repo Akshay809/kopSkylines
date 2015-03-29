@@ -57,9 +57,8 @@ public:
 };
 double DoubleDataValue::min = 0.0;
 
-/*ERROR: Please check*/
-typedef map<string, DataValue> DataMap;
-typedef map<string, DataValue>::iterator DataMapIterator;
+typedef map<string, DataValue*> DataMap;
+typedef map<string, DataValue*>::iterator DataMapIterator;
 
 
 class DataInstance {
