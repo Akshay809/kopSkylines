@@ -3,7 +3,18 @@
 DataInstance& DataInstance::operator= (const DataInstance& I) {
 	if(this!=&I) {
 		weight = 0;
+		/*Should not shallow copy o.w. editing Datastore of this object will affect I as well*/
 		dataStore = I.getDataStore();
+		/*Performming deep copy*/
+		DataIterator itr = dataStore.begin();
+		while(itr!=dataStore.end()) {
+			DataValue copyValue = *(itr->second);
+			itr->second = &copyValue;
+			itr++;
+		}
+		/*Check for origin and minimize*/
+		if(this->instanceId==1)
+			minimizeDS();
 	}
 	return *this;
 }
