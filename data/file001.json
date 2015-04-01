@@ -5,56 +5,56 @@
 				{
 					"distance": 30,
 					"time": 4,
-					"wt": 20
+					"Weight": 20
 				},
 				{
-					"distance": 45,
+					"distance": 45.5,
 					"time": 5,
-					"wt": 30
+					"Weight": 30
 				},
 				{
-					"distance": 30,
+					"distance": 30.7,
 					"time": 8,
-					"wt": 40
+					"Weight": 40
 				},
 				{
-					"distance": 45,
-					"time": 8,
-					"wt": 20
+					"distance": 45.0,
+					"time": 8.2,
+					"Weight": 20
 				}
 			]
 		},
 		{
 			"instances": [
 				{
-					"distance": 45,
-					"time": 4,
-					"wt": 20
+					"distance": 45.4,
+					"time": 4.1,
+					"Weight": 20
 				},
 				{
-					"distance": 45,
-					"time": 6,
-					"wt": 20
+					"distance": 45.6,
+					"time": 6.3,
+					"Weight": 20
 				},
 				{
 					"distance": 30,
 					"time": 7,
-					"wt": 30
+					"Weight": 30
 				},
 				{
 					"distance": 30,
 					"time": 8,
-					"wt": 20
+					"Weight": 20
 				},
 				{
-					"distance": 45,
-					"time": 9,
-					"wt": 10
+					"distance": 45.3,
+					"time": 8.9,
+					"Weight": 10
 				},
 				{
 					"distance": 30,
 					"time": 9,
-					"wt": 10
+					"Weight": 10
 				}
 			]
 		},
@@ -63,17 +63,17 @@
 				{
 					"distance": 30,
 					"time": 3,
-					"wt": 10
+					"Weight": 10
 				},
 				{
-					"distance": 30,
-					"time": 5,
-					"wt": 80
+					"distance": 30.4,
+					"time": 5.1,
+					"Weight": 80
 				},
 				{
 					"distance": 45,
-					"time": 6,
-					"wt": 10
+					"time": 6.0,
+					"Weight": 10
 				}
 			]
 		}
