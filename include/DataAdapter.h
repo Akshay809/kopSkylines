@@ -6,7 +6,6 @@
 #include <cstring>
 #include <fstream>
 #include <sstream>
-#include <unordered_set>
 
 using namespace std;
 
@@ -14,19 +13,21 @@ class FileReader {
 protected:
 	string inputFile;
 	ifstream infile;
-	unordered_set<string> AttributeList;
+	map<string, int> AttributeList;
 	char * c_file;
 public:
 
 	FileReader(const string inputFile) : infile(inputFile), inputFile(inputFile) {}
 
 	virtual void initAttributeList() = 0;
+	virtual	void validateDataAndInitAttrList() = 0;
+
+					void readFileToString();
 	virtual bool hasNextLine() {}
 					void readNextLine(vector<string>&, char);
 	virtual bool hasNextObject() { return hasNextLine(); }
 	virtual void readNextObject(DataObject&);
-					void readFileToString();
-	virtual void validateData();
+
 	virtual void createDummyInstance(DataInstance&);
 
 	~FileReader() {

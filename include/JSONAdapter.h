@@ -27,8 +27,10 @@
 	- instance is a dictionary
 	- Key is always a string
 	- Only standard(int, double, string) type values allowed currently, if required to add a different type of value, say a hexadecimal type value, will have to update the Json parser from the one that is being currently used
-	- Last key-value pair needs to be "Weight-Value", so even if Weight attribute is needed to be specified somewhere in middle, it is allowed
-	- If keys for an instance are not unique, the value for the last occurence will get saved in the DataStore
+	- keys for an instance required to be unique
+	- One attribute needs to have values of same type, across all instances
+	- Last key-value pair needs to be "Weight"-Value, also only "Weight" attribute is allowed to be specified anywhere in middle also. Value must be int
+	- missing values are allowed
 */
 
 #ifndef JSON_ADAPTER_H
@@ -49,16 +51,16 @@ public:
 	JSONReader(const string inputFile) : FileReader(inputFile) {
 		readFileToString();
 		document.Parse(c_file);	//Creates a DOM/SAX model of given file
-		validateData();
-		initAttributeList();
+		validateDataAndInitAttrList();
 	}
-	void validateData();
-	void initAttributeList();
+	void validateDataAndInitAttrList();
 	bool hasNextObject();
 	void readNextObject(DataObject&);
 	void createDummyInstance(DataInstance&);
 	// ~JSONReader();
 };
+
+// map<string, int> AttributeList; 
 
 class JSONWriter : public FileWriter {
 public:
@@ -67,8 +69,7 @@ public:
 	// ~JSONWriter();
 };
 
-
-void JSONReader::validateData() {
+void JSONReader::validateDataAndInitAttrList() {
 
 		if(!document.IsObject()) throw InvalidDataException("Express top most element as an object");
 		if(!document.HasMember("objects")) throw InvalidDataException("\"objects\", key value pair expected");
@@ -101,18 +102,27 @@ void JSONReader::validateData() {
 				for (itr = DataInstance.MemberBegin(); itr+1 != DataInstance.MemberEnd(); ++itr) {
 
 					attrName = itr->name.GetString();
-					AttributeList.insert(attrName);
+					
+					int CurrentValueType;
+						if(itr->value.IsDouble())
+							CurrentValueType = DoubleDataValue::type;
+						else if(itr->value.IsInt())
+							CurrentValueType = IntDataValue::type;
+						else if(itr->value.IsString())
+							CurrentValueType = StringDataValue::type;
+						else throw InvalidDataException("Int/Double/String values expected");
 
-						if(!itr->value.IsDouble() && !itr->value.IsInt() && !itr->value.IsString())	throw InvalidDataException("Int/Double/String values expected");
+					if(AttributeList.find(attrName)==AttributeList.end())
+						AttributeList[attrName] = CurrentValueType;
+					else if(AttributeList[attrName] != CurrentValueType)
+						throw InvalidDataException("Conflicting DataTypes for values of same attribute");
+
 				}
 				if(attrName!="Weight" && !itr->value.IsInt()) throw InvalidDataException("Weight-Value expected as last pair");
 		}
 	}
 }
 
-void JSONReader::initAttributeList() {
-	// Initialised in validation function itself
-}
 
 bool JSONReader::hasNextObject() {
 	return NextObjectToRead!=DataObjects.End();
@@ -120,8 +130,8 @@ bool JSONReader::hasNextObject() {
 
 void JSONReader::createDummyInstance(DataInstance& instance) {
 	DataMap& dataStore = instance.getDataStore();
-	for (vector<string>::iterator itr = AttributeList.begin(); itr != AttributeList.end(); ++itr)	{
-		dataStore[*itr] = NULL;
+	for (map<string, int>::iterator itr = AttributeList.begin(); itr != AttributeList.end(); ++itr)	{
+		dataStore[itr->first] = NULL;
 	}
 }
 
