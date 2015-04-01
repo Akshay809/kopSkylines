@@ -1,0 +1,81 @@
+{
+	"objects": [
+		{
+			"instances": [
+				{
+					"distance": 30,
+					"time": 4.0,
+					"Weight": 20
+				},
+				{
+					"distance": 45,
+					"time": 5.0,
+					"Weight": 30
+				},
+				{
+					"distance": 30,
+					"time": 8.0,
+					"Weight": 40
+				},
+				{
+					"distance": 45,
+					"time": 8.2,
+					"Weight": 20
+				}
+			]
+		},
+		{
+			"instances": [
+				{
+					"distance": 45,
+					"time": 4.1,
+					"Weight": 20
+				},
+				{
+					"distance": 45,
+					"time": 6.3,
+					"Weight": 20
+				},
+				{
+					"distance": 30,
+					"time": 7.0,
+					"Weight": 30
+				},
+				{
+					"distance": 30,
+					"time": 8.0,
+					"Weight": 20
+				},
+				{
+					"distance": 45,
+					"time": 8.9,
+					"Weight": 10
+				},
+				{
+					"distance": 30,
+					"time": 9.0,
+					"Weight": 10
+				}
+			]
+		},
+		{
+			"instances": [
+				{
+					"distance": 30,
+					"time": 3.0,
+					"Weight": 10
+				},
+				{
+					"distance": 30,
+					"time": 5.1,
+					"Weight": 80
+				},
+				{
+					"distance": 45,
+					"time": 6.0,
+					"Weight": 10
+				}
+			]
+		}
+	]
+}
