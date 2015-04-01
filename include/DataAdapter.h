@@ -2,29 +2,49 @@
 #define DATA_ADAPTER_H
 
 #include <Data.h>
+#include <Exceptions.h>
+#include <cstring>
+#include <fstream>
+#include <sstream>
+#include <unordered_set>
+
 using namespace std;
 
 class FileReader {
 protected:
 	string inputFile;
+	ifstream infile;
+	unordered_set<string> AttributeList;
+	char * c_file;
 public:
-	FileReader(const string &inputFile) : inputFile(inputFile) {}
-	virtual bool hasNextLine() = 0;
-	virtual void readNextLine(DataInstance &instance) = 0;
-	~FileReader();
+
+	FileReader(const string inputFile) : infile(inputFile), inputFile(inputFile) {}
+
+	virtual void initAttributeList() = 0;
+	virtual bool hasNextLine() {}
+					void readNextLine(vector<string>&, char);
+	virtual bool hasNextObject() { return hasNextLine(); }
+	virtual void readNextObject(DataObject&);
+					void readFileToString();
+	virtual void validateData();
+	virtual void createDummyInstance(DataInstance&);
+
+	~FileReader() {
+		infile.close();
+	}
 };
 
 class FileWriter {
 protected:
 	string outputFile;
 public:
-	FileWriter(const string &outputFile) : outputFile(outputFile) {}
-	virtual void writeNextLine(DataInstance &instance) = 0;
-	~FileWriter();
+	FileWriter(const string outputFile) : outputFile(outputFile) {}
+	virtual void writeNextLine(DataInstance&) = 0;
+	// ~FileWriter();
 };
 
-void importData(FileReader &reader, vector<DataObject> &data);
+void importData(FileReader&, objectSet&);
 
-void exportData(FileWriter &writer, const vector<DataObject> &data);
+void exportData(FileWriter&, const objectSet&);
 
 #endif
