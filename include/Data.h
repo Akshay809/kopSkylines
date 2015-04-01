@@ -8,17 +8,21 @@
 using namespace std;
 
 class DataValue {
+private:
+	int type;
 public:
- 	DataValue() {}
-	// CompareWith(I): return -1 if lesser, 0 if equal, 1 if greater
+ 	DataValue(int type): type(type) {}
+	// CompareWith(I): return -1 if lesser, 0 if equal, 1 if greater, 2 if can't be compared
 	// UpdateTo(I): updates value of current object to match I
 	virtual int compareWith(DataValue&) = 0;
 	virtual void updateTo(DataValue&) = 0;
 	virtual void* objectReference() = 0;
 	virtual void minimize() = 0;
 
+ 	int getType() { return type; }
 	void updateIfLargerThan(DataValue&);
 	void updateIfSmallerThan(DataValue&);
+	virtual DataValue& createCopy() = 0;
 };
 
 class IntDataValue : public DataValue {
@@ -26,7 +30,8 @@ private:
 	int value;
 public:
 	static int min;
-	IntDataValue(int value): value(value) {}
+	static const int type;
+	IntDataValue(int value): value(value), DataValue(IntDataValue::type) {}
 
 	void* objectReference() { return this; }
 	int getValue() { return value; }
@@ -34,15 +39,18 @@ public:
 	int compareWith(DataValue&);
 	void updateTo(DataValue&);
 	void minimize() {	value = min; }
+	DataValue& createCopy();
 };
 int IntDataValue::min = 0;
+const int IntDataValue::type = 1; //Should be unique
 
 class DoubleDataValue : public DataValue {
 private:
 	double value;
 public:
 	static double min;
-	DoubleDataValue(double value): value(value) {}
+	static const int type;
+	DoubleDataValue(double value): value(value), DataValue(DoubleDataValue::type) {}
 
 	void* objectReference() { return this; }
 	int getValue() { return value; }
@@ -50,35 +58,55 @@ public:
 	int compareWith(DataValue&);
 	void updateTo(DataValue&);
 	void minimize() {	value = min; }
+	DataValue& createCopy();
 };
 double DoubleDataValue::min = 0.0;
+const int DoubleDataValue::type = 2; //Should be unique
 
-/*Using Datavalue pointer is essential*/
-/*However it does have a use*/
-/*When a copy of an instance is added to an object,intead of adding the original instance, the sructure of the instance copied to the object can't be modified but the value can still be edited*/
+class StringDataValue : public DataValue {
+private:
+	string value;
+public:
+	static string min;
+	static const int type;
+	StringDataValue(string value): value(value), DataValue(StringDataValue::type) {}
+
+	void* objectReference() { return this; }
+	int getValue() { return value; }
+
+	int compareWith(DataValue&);
+	void updateTo(DataValue&);
+	void minimize() {	value = min; }
+	DataValue& createCopy();
+};
+string StringDataValue::min = "";
+const int StringDataValue::type = 3; //Should be unique
+
+
 typedef map<string, DataValue*> DataMap;
 typedef map<string, DataValue*>::iterator DataMapIterator;
 
 
 class DataInstance {
 private:
-	int instanceId, objectId, weight;
+	int instanceId, weight;
 	DataObject& Object;
 	DataMap dataStore;
 	// DataInstance(const DataInstance&);
 public:
 	static int totalInstances;
 	static DataInstance Origin;
-	DataInstance(DataObject& Object): objectId(Object.getID()), Object(Object), instanceId(++totalInstances) {}
+	DataInstance(DataObject& Object): Object(Object), instanceId(++totalInstances), weight(0) {}
 
 	DataInstance& operator= (const DataInstance&);
 
-	int getObjectID() { return objectId; }
+	void setWeight(int wt) { weight = wt; }
+	int getObjectID() { return Object.getID(); }
 	int getWeight() { return weight; }
 	int getInstanceID() { return instanceId; }
 
 	DataObject& getObjectRef() { return Object; }
-	const DataMap& getDataStore() { return dataStore; }
+	DataMap& getDataStore() { return dataStore; }
 
 	bool isMinimumCornerOfU();
 	bool isDominatedBy(DataInstance&);
@@ -96,7 +124,7 @@ private:
 	instanceSet instances;
 	DataInstance Umin, Umax;
 public:
-	static int totalObjects, instancesAdded;
+	static int totalObjects;//, instancesAdded;
 	static DataObject Origin;
 	DataObject(): id(++totalObjects), Umin(*this), Umax(*this), objectWeight(0) {}
 
@@ -119,8 +147,9 @@ typedef vector<DataObject*> objectSet;
 
 int DataObject::totalObjects = 0;
 DataObject DataObject::Origin;
-/*Following 2 quantities need not be same, I could have created many instances but added nothing. totalInstances needed to assign instance id, while instances added is needed to define origin based on the structure of the first added instance other than itself*/
-int DataObject::instancesAdded = 0;
+/*instancesAdded and totalInstances need not be same, I could have created many instances but added nothing. totalInstances needed to assign instance id, while instances added is needed to define origin based on the structure of the first added instance other than itself*/
+
+// int DataObject::instancesAdded = 0;
 int DataInstance::totalInstances = 0;
 DataInstance DataInstance::Origin(DataObject::Origin);
 

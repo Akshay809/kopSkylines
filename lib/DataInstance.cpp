@@ -8,8 +8,10 @@ DataInstance& DataInstance::operator= (const DataInstance& I) {
 		/*Performming deep copy*/
 		DataIterator itr = dataStore.begin();
 		while(itr!=dataStore.end()) {
-			DataValue copyValue = *(itr->second);
-			itr->second = &copyValue;
+			if(itr->second!=NULL){
+				DataValue& copyValue = (itr->second)->createCopy();
+				itr->second = &copyValue;
+			}
 			itr++;
 		}
 		/*Check for origin and minimize*/
@@ -20,46 +22,82 @@ DataInstance& DataInstance::operator= (const DataInstance& I) {
 }
 
 bool DataInstance::isMinimumCornerOfU() {
-	DataInstance Umin = Object.getMinimumCorner();
+	DataInstance& Umin = Object.getMinimumCorner();
 	return this==&Umin;
 }
 
 bool DataInstance::isDominatedBy(DataInstance& I) {
-	DataMap dataStoreOfI = I.getDataStore();
-	DataIterator itrU = dataStore.begin();
-	DataIterator itrI = dataStoreOfI.begin();
-	while(itrU!=dataStore.end() && itrI!=dataStoreOfI.end()) {
+	DataMap& dataStoreOfI = I.getDataStore();
+	DataIterator itrI, itrU = dataStore.begin();
+
+	while(itrU!=dataStore.end()) {
+		itrI = dataStoreOfI.find(itrU->first);
+
+		if ( itrI==dataStoreOfI.end() || (itrU->second==NULL && itrI->second==NULL)) {
+			itrU++;
+			continue;
+		}
+		// Handling missing values
+		if(itrU->second==NULL || itrI->second==NULL) {
+			return false;
+		}
+		//IMP: Using strictly less than as preference function for each attribute, thus -1
 		if((itrU->second)->compareWith(*(itrI->second)) == -1)
 			return false;
-		itrU++; itrI++;
+		itrU++;
 	}
 	return true;
 }
 
 void DataInstance::minimizeWRT(DataInstance& I) {
-	DataMap dataStoreOfI = I.getDataStore();
-	DataIterator itrU = dataStore.begin();
-	DataIterator itrI = dataStoreOfI.begin();
-	while(itrU!=dataStore.end() && itrI!=dataStoreOfI.end()) {
-		(itrU->second)->updateIfLargerThan(*(itrI->second));
-		itrU++; itrI++;
+	DataMap& dataStoreOfI = I.getDataStore();
+	DataIterator itrI, itrU = dataStore.begin();
+
+	while(itrU!=dataStore.end()) {
+		itrI = dataStoreOfI.find(itrU->first);
+
+		if ( itrI==dataStoreOfI.end() || itrI->second==NULL) {
+			itrU++;
+			continue;
+		}
+
+		if( itrU->second!=NULL )
+			(itrU->second)->updateIfLargerThan(*(itrI->second));
+		else {
+			DataValue& copyValue = (itrI->second)->createCopy();
+			itrU->second = &copyValue;
+		}
+		itrU++;
 	}
 }
 
 void DataInstance::maximizeWRT(DataInstance& I) {
 	DataMap dataStoreOfI = I.getDataStore();
-	DataIterator itrU = dataStore.begin();
-	DataIterator itrI = dataStoreOfI.begin();
-	while(itrU!=dataStore.end() && itrI!=dataStoreOfI.end()) {
-		(itrU->second)->updateIfSamllerThan(*(itrI->second));
-		itrU++; itrI++;
+	DataIterator itrI, itrU = dataStore.begin();
+
+	while(itrU!=dataStore.end()) {
+		itrI = dataStoreOfI.find(itrU->first);
+
+		if ( itrI==dataStoreOfI.end() || itrI->second==NULL) {
+			itrU++;
+			continue;
+		}
+
+		if( itrU->second!=NULL )
+			(itrU->second)->updateIfSmallerThan(*(itrI->second));
+		else {
+			DataValue& copyValue = (itrI->second)->createCopy();
+			itrU->second = &copyValue;
+		}
+		itrU++;
 	}
 }
 
 void DataInstance::minimizeDS() {
 	DataIterator itr = dataStore.begin();
 	while(itr!=dataStore.end()) {
-		(itr->second)->minimize();
+		if(itr->second!=NULL)
+			(itr->second)->minimize();
 		itr++;
 	}
 }

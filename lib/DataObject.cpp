@@ -28,9 +28,8 @@ void DataObject::addInstance(DataInstance& I) {
 		instances.push_back(I);
 		objectWeight += I.getWeight();
 		updateCorners();
-		if(DataObject::instancesAdded++ == 0) {
-			DataInstance::Origin = I;
-		}
+		DataInstance::Origin = I;
+		// instancesAdded++;
 	}
 }
 
