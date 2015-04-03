@@ -17,18 +17,17 @@ protected:
 	char * c_file;
 public:
 
-	FileReader(const string inputFile) : infile(inputFile), inputFile(inputFile) {}
+	FileReader(const string inputFile) : infile(inputFile.c_str()), inputFile(inputFile) {}
 
-	virtual void initAttributeList() = 0;
-	virtual	void validateDataAndInitAttrList() = 0;
+	virtual	void validateDataAndInitAttrList() {}
 
 					void readFileToString();
 	virtual bool hasNextLine() {}
 					void readNextLine(vector<string>&, char);
 	virtual bool hasNextObject() { return hasNextLine(); }
-	virtual void readNextObject(DataObject&);
+	virtual void readNextObject(DataObject&) {}
 
-	virtual void createDummyInstance(DataInstance&);
+	virtual void createDummyInstance(DataInstance&) {}
 
 	~FileReader() {
 		infile.close();

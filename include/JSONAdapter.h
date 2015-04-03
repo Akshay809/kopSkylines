@@ -45,7 +45,7 @@ using namespace rapidjson;
 class JSONReader : public FileReader {
 private:
 	Document document;
-	const Value& DataObjects, DataInstances;
+	Value DataObjects;
 	Value::ConstValueIterator NextObjectToRead;
 public:
 	JSONReader(const string inputFile) : FileReader(inputFile) {
@@ -87,7 +87,7 @@ void JSONReader::validateDataAndInitAttrList() {
 			if(!DataObject.IsObject()) throw InvalidDataException("DataObject: object expected");
 			if(!DataObject.HasMember("instances")) throw InvalidDataException("\"instances\", key value pair expected");
 
-		DataInstances = DataObject["instances"];
+		const Value& DataInstances = DataObject["instances"];
 
 			if(!DataInstances.IsArray()) throw InvalidDataException("\"instances\": array value expected");
 
@@ -96,13 +96,12 @@ void JSONReader::validateDataAndInitAttrList() {
 			const Value& DataInstance = *instance;
 			string attrName;
 
-				if(DataInstance.IsObject())	throw InvalidDataException("DataInstance: object expected");
+				if(!DataInstance.IsObject())	throw InvalidDataException("DataInstance: object expected");
 
 			Value::ConstMemberIterator itr;
 				for (itr = DataInstance.MemberBegin(); itr+1 != DataInstance.MemberEnd(); ++itr) {
 
 					attrName = itr->name.GetString();
-					
 					int CurrentValueType;
 						if(itr->value.IsDouble())
 							CurrentValueType = DoubleDataValue::type;
@@ -111,7 +110,6 @@ void JSONReader::validateDataAndInitAttrList() {
 						else if(itr->value.IsString())
 							CurrentValueType = StringDataValue::type;
 						else throw InvalidDataException("Int/Double/String values expected");
-
 					if(AttributeList.find(attrName)==AttributeList.end())
 						AttributeList[attrName] = CurrentValueType;
 					else if(AttributeList[attrName] != CurrentValueType)
@@ -148,18 +146,23 @@ void JSONReader::readNextObject(DataObject& object) {
 		createDummyInstance(newInstance);
 		DataMap& dataStore = newInstance.getDataStore();
 
-		for (Value::ConstMemberIterator itr = instance.MemberBegin(); itr+1 != instance.MemberEnd(); ++itr) {
+		Value::ConstMemberIterator itr;
+		for (itr = instance.MemberBegin(); itr+1 != instance.MemberEnd(); ++itr) {
 			string attr = itr->name.GetString();
-				if(itr->value.IsInt()) {
-					DataValue * val = new IntDataValue(itr->value.GetInt());
-				} else if(itr->value.IsDouble()) {
-					DataValue * val = new DoubleDataValue(itr->value.GetDouble());
-				} else //if(itr->value.IsString()) { 
-					DataValue * val = new StringDataValue(itr->value.GetString());
-				}
+			DataValue * val;
+			if(itr->value.IsInt()) {
+				val = new IntDataValue(itr->value.GetInt());
+			} else if(itr->value.IsDouble()) {
+				val = new DoubleDataValue(itr->value.GetDouble());
+			} else /*if(itr->value.IsString())*/ { 
+				val = new StringDataValue(itr->value.GetString());
+			}
 			dataStore[attr] = val;
 		}
 		newInstance.setWeight(itr->value.GetInt());
+cout << newInstance.getWeight() << endl;
+cout << newInstance.getInstanceID() << endl;
+cout << newInstance.getObjectID() << endl;
 		object.addInstance(newInstance);
 	}
 	NextObjectToRead++;

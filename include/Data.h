@@ -1,5 +1,5 @@
-#ifndef DATA_H
-#define DATA_H
+#ifndef DATA_DEFINITION_H
+#define DATA_DEFINITION_H
 
 #include <vector>
 #include <map>
@@ -41,8 +41,8 @@ public:
 	void minimize() {	value = min; }
 	DataValue& createCopy();
 };
-int IntDataValue::min = 0;
-const int IntDataValue::type = 1; //Should be unique
+// int IntDataValue::min = 0;
+// const int IntDataValue::type = 1; //Should be unique
 
 class DoubleDataValue : public DataValue {
 private:
@@ -53,15 +53,15 @@ public:
 	DoubleDataValue(double value): value(value), DataValue(DoubleDataValue::type) {}
 
 	void* objectReference() { return this; }
-	int getValue() { return value; }
+	double getValue() { return value; }
 
 	int compareWith(DataValue&);
 	void updateTo(DataValue&);
 	void minimize() {	value = min; }
 	DataValue& createCopy();
 };
-double DoubleDataValue::min = 0.0;
-const int DoubleDataValue::type = 2; //Should be unique
+// double DoubleDataValue::min = 0.0;
+// const int DoubleDataValue::type = 2; //Should be unique
 
 class StringDataValue : public DataValue {
 private:
@@ -72,20 +72,25 @@ public:
 	StringDataValue(string value): value(value), DataValue(StringDataValue::type) {}
 
 	void* objectReference() { return this; }
-	int getValue() { return value; }
+	string getValue() { return value; }
 
 	int compareWith(DataValue&);
 	void updateTo(DataValue&);
 	void minimize() {	value = min; }
 	DataValue& createCopy();
 };
-string StringDataValue::min = "";
-const int StringDataValue::type = 3; //Should be unique
+// string StringDataValue::min = "";
+// const int StringDataValue::type = 3; //Should be unique
+
+
+class DataObject;
+class DataInstance;
 
 
 typedef map<string, DataValue*> DataMap;
 typedef map<string, DataValue*>::iterator DataMapIterator;
-
+/*Copy of an instance will be saved instead of original instance and that too as a private member of the DataObject, ensuring data security*/
+typedef vector<DataInstance> instanceSet;
 
 class DataInstance {
 private:
@@ -101,22 +106,22 @@ public:
 	DataInstance& operator= (const DataInstance&);
 
 	void setWeight(int wt) { weight = wt; }
-	int getObjectID() { return Object.getID(); }
+	int getObjectID();// { return Object.getID(); }
 	int getWeight() { return weight; }
 	int getInstanceID() { return instanceId; }
 
 	DataObject& getObjectRef() { return Object; }
+	const DataMap& getDataStore() const { return dataStore; }
 	DataMap& getDataStore() { return dataStore; }
 
 	bool isMinimumCornerOfU();
 	bool isDominatedBy(DataInstance&);
+	bool isDominatedBy(instanceSet&);
+
 	void minimizeWRT(DataInstance&);
 	void maximizeWRT(DataInstance&);
 	void minimizeDS();
 };
-
-/*Copy of an instance will be saved instead of original instance and that too as a private member of the DataObject, ensuring data security*/
-typedef vector<DataInstance> instanceSet;
 
 class DataObject {
 private:
@@ -142,24 +147,17 @@ public:
 	void removeInstance(DataInstance&);
 };
 
+
 /*Using a pointer so that if an object is edited, dont have to resave the object agian in the vector*/
 typedef vector<DataObject*> objectSet;
 
-int DataObject::totalObjects = 0;
-DataObject DataObject::Origin;
+// int DataObject::totalObjects = 0;
+// DataObject DataObject::Origin;
 /*instancesAdded and totalInstances need not be same, I could have created many instances but added nothing. totalInstances needed to assign instance id, while instances added is needed to define origin based on the structure of the first added instance other than itself*/
 
 // int DataObject::instancesAdded = 0;
-int DataInstance::totalInstances = 0;
-DataInstance DataInstance::Origin(DataObject::Origin);
 
-bool isDominated(DataInstance& u, instanceSet& set) {
-	instanceSet::iterator itr = set.begin();
-	while(itr!=set.end()) {
-		if(u.isDominatedBy(*itr++));
-			return true;
-	}
-	return false;
-}
+// int DataInstance::totalInstances = 0;
+// DataInstance DataInstance::Origin(DataObject::Origin);
 
 #endif

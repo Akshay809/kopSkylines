@@ -7,5 +7,5 @@ using namespace std;
 
 class InvalidDataException : public domain_error {
 public:
-	InvalidDataException(string& msg) : domain_error(msg) {}
-}
+	InvalidDataException(string msg) : domain_error(msg) {}
+};

@@ -1,5 +1,8 @@
 #include <Data.h>
 
+int DataObject::totalObjects = 0;
+DataObject DataObject::Origin;
+
 void DataObject::updateMinimumCorner() {
 	instanceSet::iterator itr = instances.begin();
 
@@ -40,8 +43,8 @@ void DataObject::removeInstance(DataInstance &I) {
 void DataObject::removeInstance(int instanceID) {
 	instanceSet::iterator itr = instances.begin();
 	while(itr!=instances.end()) {
-		if(*itr.getInstanceID()==instanceID && *itr.getObjectID()==id) {
-			objectWeight -= *itr.getWeight();
+		if(itr->getInstanceID()==instanceID && itr->getObjectID()==id) {
+			objectWeight -= itr->getWeight();
 			instances.erase(itr);
 			updateCorners();
 			break;

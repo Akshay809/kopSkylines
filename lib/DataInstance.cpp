@@ -1,12 +1,17 @@
 #include <Data.h>
 
+int DataInstance::totalInstances = 0;
+DataInstance DataInstance::Origin(DataObject::Origin);
+
+int DataInstance::getObjectID() { return Object.getID(); }
+
 DataInstance& DataInstance::operator= (const DataInstance& I) {
 	if(this!=&I) {
 		weight = 0;
 		/*Should not shallow copy o.w. editing Datastore of this object will affect I as well*/
 		dataStore = I.getDataStore();
 		/*Performming deep copy*/
-		DataIterator itr = dataStore.begin();
+		DataMapIterator itr = dataStore.begin();
 		while(itr!=dataStore.end()) {
 			if(itr->second!=NULL){
 				DataValue& copyValue = (itr->second)->createCopy();
@@ -27,8 +32,8 @@ bool DataInstance::isMinimumCornerOfU() {
 }
 
 bool DataInstance::isDominatedBy(DataInstance& I) {
-	DataMap& dataStoreOfI = I.getDataStore();
-	DataIterator itrI, itrU = dataStore.begin();
+	DataMap dataStoreOfI = I.getDataStore();
+	DataMapIterator itrI, itrU = dataStore.begin();
 
 	while(itrU!=dataStore.end()) {
 		itrI = dataStoreOfI.find(itrU->first);
@@ -49,9 +54,18 @@ bool DataInstance::isDominatedBy(DataInstance& I) {
 	return true;
 }
 
+bool DataInstance::isDominatedBy(instanceSet& set) {
+	instanceSet::iterator itr = set.begin();
+	while(itr!=set.end()) {
+		if(this->isDominatedBy(*itr++));
+			return true;
+	}
+	return false;
+}
+
 void DataInstance::minimizeWRT(DataInstance& I) {
-	DataMap& dataStoreOfI = I.getDataStore();
-	DataIterator itrI, itrU = dataStore.begin();
+	DataMap dataStoreOfI = I.getDataStore();
+	DataMapIterator itrI, itrU = dataStore.begin();
 
 	while(itrU!=dataStore.end()) {
 		itrI = dataStoreOfI.find(itrU->first);
@@ -73,7 +87,7 @@ void DataInstance::minimizeWRT(DataInstance& I) {
 
 void DataInstance::maximizeWRT(DataInstance& I) {
 	DataMap dataStoreOfI = I.getDataStore();
-	DataIterator itrI, itrU = dataStore.begin();
+	DataMapIterator itrI, itrU = dataStore.begin();
 
 	while(itrU!=dataStore.end()) {
 		itrI = dataStoreOfI.find(itrU->first);
@@ -94,7 +108,7 @@ void DataInstance::maximizeWRT(DataInstance& I) {
 }
 
 void DataInstance::minimizeDS() {
-	DataIterator itr = dataStore.begin();
+	DataMapIterator itr = dataStore.begin();
 	while(itr!=dataStore.end()) {
 		if(itr->second!=NULL)
 			(itr->second)->minimize();
