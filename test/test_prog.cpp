@@ -11,8 +11,7 @@ int main(int argc, char const *argv[])
 	objectSet& DataObjects = readData(Fname);
 	cout << "Number of objects read: " << DataObjects.size() << endl;
 	for (objectSet::iterator itr = DataObjects.begin(); itr != DataObjects.end(); ++itr) {
-		cout << " Object Id: " << (*itr)->getID() << endl;
-		cout << " Object Weight: " << (*itr)->getObjectWeight() << endl;		
+		(*itr)->printDataObject();
 	}
 	return 0;
 }

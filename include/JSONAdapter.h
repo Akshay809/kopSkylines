@@ -160,9 +160,6 @@ void JSONReader::readNextObject(DataObject& object) {
 			dataStore[attr] = val;
 		}
 		newInstance.setWeight(itr->value.GetInt());
-cout << newInstance.getWeight() << endl;
-cout << newInstance.getInstanceID() << endl;
-cout << newInstance.getObjectID() << endl;
 		object.addInstance(newInstance);
 	}
 	NextObjectToRead++;

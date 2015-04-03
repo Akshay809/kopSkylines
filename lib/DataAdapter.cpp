@@ -1,4 +1,5 @@
 #include <DataAdapter.h>
+#include <iostream>
 
 using namespace std;
 
@@ -25,9 +26,9 @@ void FileReader::readFileToString() {
 
 void importData(FileReader& reader, objectSet& data) {
 	while(reader.hasNextObject()) {
-		DataObject obj;
-		reader.readNextObject(obj);
-		data.push_back(&obj);
+		DataObject * obj = new DataObject();
+		reader.readNextObject(*obj);
+		data.push_back(obj);
 	}
 }
 

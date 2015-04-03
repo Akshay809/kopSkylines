@@ -6,6 +6,10 @@
 					"distance": 30,
 					"time": 4.0,
 					"Weight": 20
+				},
+				{
+					"distance": 15,
+					"Weight": 30
 				}
 			]
 		}

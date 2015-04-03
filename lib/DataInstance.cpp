@@ -1,4 +1,7 @@
 #include <Data.h>
+#include <iostream>
+
+using namespace std;
 
 int DataInstance::totalInstances = 0;
 DataInstance DataInstance::Origin(DataObject::Origin);
@@ -112,6 +115,23 @@ void DataInstance::minimizeDS() {
 	while(itr!=dataStore.end()) {
 		if(itr->second!=NULL)
 			(itr->second)->minimize();
+		itr++;
+	}
+}
+
+void DataInstance::printDataInstance() {
+	cout << "  Instance::ID: " << instanceId << endl;
+	cout << "  Instance::ObjectID: " << getObjectID() << endl;
+	cout << "  Instance::Weight: " << weight << endl;
+	cout << "  Instance::Memory Location: " << this << endl;
+	cout << "  Instance::Object Memory Location: " << &Object << endl;
+	cout << "  Instance::DataStore Memory Location: " << &dataStore << endl;
+
+	DataMapIterator itr = dataStore.begin();
+	while(itr!=dataStore.end()) {
+		cout << "    " << itr->first << " -> ";
+		if(itr->second!=NULL)
+			itr->second->printDataValue();
 		itr++;
 	}
 }

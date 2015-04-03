@@ -23,6 +23,7 @@ public:
 	void updateIfLargerThan(DataValue&);
 	void updateIfSmallerThan(DataValue&);
 	virtual DataValue& createCopy() = 0;
+	virtual void printDataValue() = 0;
 };
 
 class IntDataValue : public DataValue {
@@ -40,6 +41,7 @@ public:
 	void updateTo(DataValue&);
 	void minimize() {	value = min; }
 	DataValue& createCopy();
+	void printDataValue();
 };
 // int IntDataValue::min = 0;
 // const int IntDataValue::type = 1; //Should be unique
@@ -59,6 +61,7 @@ public:
 	void updateTo(DataValue&);
 	void minimize() {	value = min; }
 	DataValue& createCopy();
+	void printDataValue();
 };
 // double DoubleDataValue::min = 0.0;
 // const int DoubleDataValue::type = 2; //Should be unique
@@ -78,6 +81,7 @@ public:
 	void updateTo(DataValue&);
 	void minimize() {	value = min; }
 	DataValue& createCopy();
+	void printDataValue();
 };
 // string StringDataValue::min = "";
 // const int StringDataValue::type = 3; //Should be unique
@@ -121,6 +125,8 @@ public:
 	void minimizeWRT(DataInstance&);
 	void maximizeWRT(DataInstance&);
 	void minimizeDS();
+
+	void printDataInstance();
 };
 
 class DataObject {
@@ -145,6 +151,8 @@ public:
 	void addInstance(DataInstance&);
 	void removeInstance(int);
 	void removeInstance(DataInstance&);
+
+	void printDataObject();
 };
 
 

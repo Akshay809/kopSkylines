@@ -1,4 +1,7 @@
 #include <Data.h>
+#include <iostream>
+
+using namespace std;
 
 void DataValue::updateIfLargerThan(DataValue& I) {
 	if(this->compareWith(I)==1)
@@ -34,13 +37,17 @@ DataValue& IntDataValue::createCopy() {
 	return *newVal;
 }
 
+void IntDataValue::printDataValue() {
+	cout << "(integer) " << value << " @ " << this << endl;
+}
+
 double DoubleDataValue::min = 0.0;
 const int DoubleDataValue::type = 2; //Should be unique
 
 int DoubleDataValue::compareWith(DataValue& I) {
 	if(type!=I.getType()) return 2;
 
-	IntDataValue * Iptr = (IntDataValue*)I.objectReference();
+	DoubleDataValue * Iptr = (DoubleDataValue*)I.objectReference();
 	double Ivalue = Iptr->getValue();
 	if(this->value < Ivalue) return -1;
 	else if(Ivalue == this->value) return 0;
@@ -49,13 +56,17 @@ int DoubleDataValue::compareWith(DataValue& I) {
 
 void DoubleDataValue::updateTo(DataValue& I) {
 	if(type!=I.getType()) return;
-	IntDataValue * Iptr = (IntDataValue*)I.objectReference();
+	DoubleDataValue * Iptr = (DoubleDataValue*)I.objectReference();
 	this->value = Iptr->getValue();
 }
 
 DataValue& DoubleDataValue::createCopy() {
 	DataValue * newVal = new DoubleDataValue(value);
 	return *newVal;
+}
+
+void DoubleDataValue::printDataValue() {
+	cout << "(double) " << value << " @ " << this << endl;
 }
 
 string StringDataValue::min = "";
@@ -69,11 +80,15 @@ int StringDataValue::compareWith(DataValue &I) {
 
 void StringDataValue::updateTo(DataValue &I) {
 	if(type!=I.getType()) return;
-	IntDataValue * Iptr = (IntDataValue*)I.objectReference();
+	StringDataValue * Iptr = (StringDataValue*)I.objectReference();
 	this->value = Iptr->getValue();
 }
 
 DataValue& StringDataValue::createCopy() {
 	DataValue * newVal = new StringDataValue(value);
 	return *newVal;
+}
+
+void StringDataValue::printDataValue() {
+	cout << "(string) " << value << " @ " << this << endl;
 }

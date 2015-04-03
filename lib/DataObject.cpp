@@ -1,4 +1,7 @@
 #include <Data.h>
+#include <iostream>
+
+using namespace std;
 
 int DataObject::totalObjects = 0;
 DataObject DataObject::Origin;
@@ -51,4 +54,21 @@ void DataObject::removeInstance(int instanceID) {
 		}
 		itr++;
 	}
+}
+
+void DataObject::printDataObject() {
+	cout << "\nObject::Id: " << id << endl;
+	cout << "Object::Weight: " << objectWeight << endl;
+	cout << "Object::Object Memory Location: " << this << endl;
+	cout << "Object::Instances\n";
+	cout << "  Object::Instances Total Count: " << instances.size() << endl;
+	instanceSet::iterator itr = instances.begin();
+	while(itr!=instances.end()) {
+		itr->printDataInstance();
+		itr++;
+	}
+	cout << "\nObject::Umin " << endl;
+	Umin.printDataInstance();
+	cout << "\nObject::Umax " << endl;
+	Umax.printDataInstance();
 }
