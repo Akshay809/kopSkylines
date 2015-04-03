@@ -6,12 +6,13 @@ using namespace std;
 
 class Heap {
 public:
-	Heap(vector<DataInstance> instances);
+	Heap(instanceSet instances);
 	bool isEmpty();
 	bool isNotEmpty() {
-		return !this->isEmpty();
+		return !(this->isEmpty());
 	}
-	DataInstance top();
+	DataInstance& top();
+	void pop();
 	~Heap();
 };
 

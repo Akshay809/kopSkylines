@@ -1,48 +1,73 @@
-#include <objects.h>
+#include <Data.h>
 #include <Rtree.h>
-#include <heap.h>
+#include <Heap.h>
 #include <unordered_set>
 
 using namespace std;
 
-typedef vector<DataObject> objectSet;
+struct ObjectInfo {
+	vector<int>& DominatingObjectIDs;
+	double high, low;
+	ObjectInfo(int low, int high, vector<int> &v): low(low), high(high), DominatingObjectIDs(v) {}
+};
 
-bool isDominated(DataInstance &u, instanceSet &set) {
-	for(instanceSet::iterator itr = set.begin(); itr!=set.end();++itr) {
-		if(u.isDominatedBy(*itr));
-			return true;
-	}
-	return false;
-}
+void topDownSkyline(objectSet& data, int threshold, objectSet& skyline) {
 
-void topDownSkyline(objectSet &data, int threshold, objectSet &skyline) {
-
-	unordered_set<int> nonSkylineObjectIds;
+	map<int, ObjectInfo*> about;
+	unordered_set<int> nonSkylineIds;
 	instanceSet minimumCorners, maximumCorners;
 
-	double * probabilityUpperBound = new double[data.size()];
-	double * probabilityLowerBound = new double[data.size()];
+	objectSet::iterator itr = data.begin();
+	while(itr!=data.end()) {
+	
+		int id = *itr->getID();
+		DataInstance& Umin = *itr->getMinimumCorner();
+		DataInstance& Umax = *itr->getMaximumCorner();
+	
+		vector<int> v;
+		ObjectInfo info(0,1,v);
+		about[id] = &info;
 
-	for(int i=0; i<data.size(); i++) {
-		probabilityLowerBound[i] = 0;
-		probabilityUpperBound[i] = 1;
-		minimumCorners.push_back(data[i].getMinimumCorner());
-		maximumCorners.push_back(data[i].getMaximumCorner());
+		minimumCorners.push_back(&Umin);
+		maximumCorners.push_back(&Umax);
+		itr++;
 	}
 
-	Rtree Tg(minimumCorners);
-	Heap Hg(minimumCorners);
+	Rtree GlobalRT(minimumCorners);
+	Heap H(minimumCorners);
 
-	while(Hg.isNotEmpty()) {
-		DataInstance u = Hg.top();
-		Hg.pop();
-		if(nonSkylineObjectIds.find(u.getObjectID())!=nonSkylineObjectIds.end())
+	objectSet::iterator itr = data.begin();
+	while(itr!=data.end()) {
+		int id = *itr.getID();
+		DataInstance &Umax = *itr.getMaximumCorner();
+		vector<int>& v = about[id]->DominatingObjectIDs;
+		GlobalRT.search(DataInstance::Origin, Umax, v);
+		itr++;
+	}
+
+	//Define origin of an instance
+
+	while(H.isNotEmpty()) {
+		DataInstance& u = H.top();
+		DataObject& U = u.getObjectRef();
+		H.pop();
+		if(nonSkylineIds.find(U.getID())!=nonSkylineIds.end())
 			continue;
 		if(isDominated(u, maximumCorners)) {
-			// call heap update function
+			// update layer, Line 20 as in algo
 		}
 		if(u.isMinimumCornerOfU()) {
 			/*Line 13-16*/
+			vector<int>& v = about[U.getID()]->DominatingObjectIDs;
+			if(v.size()==1)	continue;
+			int Pu = computeSkylineProbabilityOf(u, PossibleDominatingObjectsIDs);
+			if(Pu>=threshold) {
+				partition(U);
+			}
+			else {
+				nonSkylineIds.push_back(U.getID());
+				continue;
+			}
 		}
 		else {
 			/*Line 18-28*/
