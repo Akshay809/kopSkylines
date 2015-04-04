@@ -99,8 +99,8 @@
 	  				- No parameters required
 	  				- Initializes id and properties
 	  			- **Methods**
-								- update(get)Minimum(Maximum)Corner
-									- Updates/Returns the corners of the MBB of itself
+						- update(get)Minimum(Maximum)Corner
+							- Updates/Returns the corners of the MBB of itself
 	  				- addInstance
 	  					- Adds a "deep-copy" of the instance to the list
 	  					- updates the corners and object weight
