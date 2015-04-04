@@ -23,8 +23,8 @@
 			  		- DoubleDataValue : public DataValue
 			  		- StringDataValue : public DataValue
 			  	- **Why this hierarchical structure with polymorphic reference and *not a Union instead*?**
-			  		- Main reason is to avoid the use of switch-case statements everywhere in the program, therby *making the current library implementaion more **easily extensible** *
-			  		- Besides we get to define comparison rules for each type sepeartely, which includes comparision rules for similar as well as non-similar types
+			  		- Main reason is to avoid the use of switch-case statements everywhere in the program, thereby *making the current library implementaion more **easily extensible**
+			  		- Besides we get to define comparison rules for each type sepeartely, which includes *comparision rules for similar as well as non-similar types*
 			  			- **e.g.** comparing Hexadecimal type with Integer(Decimal) type
 			  	- **Properties** ( w.r.t. extended DataValue classes )
 			  		- Value
@@ -33,18 +33,18 @@
 			  	- **Methods**
 			  		- **Note:** Relevant methods are declared virtual and are resolved at run-time
 			  		- compareWith(V)
-			  			- compares the current value with other value of same as well as different type
+			  			- compares the current value with other value, of same or of different type
 			  			- define comparison rules in lib/DataValue.cpp
 			  			- missing values and different-type comparision (if rules not specified), makes values incomparable
 			  		- updateTo(V)
 			  			- updates current value, if possible, to the value of object V
 			  			- needed as 'Value' is an exclusive property of derived classes and we use base class reference
-						- minimize
+					- minimize
 							- sets the value to minimum as per the MIN defined for that type
-						-	createCopy
+					-	createCopy
 							- used like a copy constructor, only the value object of the same type is constructed and returned
 							- *because this method is virtual*
-						-	isDominatedBy(DataInstance|instanceSet)
+					-	isDominatedBy(DataInstance|instanceSet)
 							- Checks if instance is dominated by given instance or a set of instances
 	  		- **DataInstance**
 	  			- **Properties**
