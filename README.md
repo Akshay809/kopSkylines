@@ -23,7 +23,7 @@
 			  		- DoubleDataValue : public DataValue
 			  		- StringDataValue : public DataValue
 			  	- **Why this hierarchical structure with polymorphic reference and *not a Union instead*?**
-			  		- Main reason is to avoid the use of switch-case statements everywhere in the program, thereby *making the current library implementaion more **easily extensible**
+			  		- Main reason is to avoid the use of switch-case statements everywhere in the program, thereby making the current library implementaion more **easily extensible**
 			  		- Besides we get to define comparison rules for each type sepeartely, which includes *comparision rules for similar as well as non-similar types*
 			  			- **e.g.** comparing Hexadecimal type with Integer(Decimal) type
 			  	- **Properties** ( w.r.t. extended DataValue classes )
@@ -45,6 +45,7 @@
 						- used like a copy constructor, only that the value object of the same type is constructed and returned *because this method is virtual*
 					-	isDominatedBy(DataInstance|instanceSet)
 						- Checks if instance is dominated by given instance or a set of instances
+					- get and update functions for DataValue properties
 	  		- **DataInstance**
 	  			- **Properties**
 	  				- unique instance id
@@ -61,13 +62,13 @@
 	  							- string
 	  						- Value
 	  							- Pointer to a DataValue object
-	  					- Generic design: can have any number of attributes, with values of any among the defined types
+	  					- Generic design: can have any number of attributes, with values of any type among the defined types
 	  			- **Construction**
 	  				- Requires the reference of the object for which this instance is being created
 	  				- Initializes id and properties
 	  			- **Methods**
 		  			  - isMinimumCornerOfU
-							  - Checks if current instance is the minimum corner of the MBB of the object it refers to
+								- Checks if current instance is the minimum corner of the MBB of the object it refers to
 					  - isDominatedBy(I)
 						  - Checks if current instance is dominated by I
 						  - uses the "compareWith" function for every pair of DataValues corresponding to each attribute
@@ -81,8 +82,9 @@
 						  - minimizes the current DataStore
 						  - sets every value in the DataStore of the current instance to the minimum value as defined for that type of Value
 						  - Used for constructing the DataInstanceOrigin
+						- get and update functions for DataInstance properties
 	  			- **DataInstanceOrigin**
-	  				- First '0 weight' instance created, refering DataObjectOrigin
+	  				- First '0 weight' instance created, referring DataObjectOrigin
 	  				- static member
 	  				- has minimum value for each attribute
 	  		- **DataObject**
@@ -97,8 +99,8 @@
 	  				- No parameters required
 	  				- Initializes id and properties
 	  			- **Methods**
-						- update(get)Minimum(Maximum)Corner
-							- Updates/Returns the corners of the MBB of itself
+							- update(get)Minimum(Maximum)Corner
+								- Updates/Returns the corners of the MBB of itself
 	  				- addInstance
 	  					- Adds a "deep-copy" of the instance to the list
 	  					- updates the corners and object weight
@@ -113,12 +115,15 @@
 	  				- Referenced by DataInstanceOrigin 
 	  - **DataAdapter.h**
 	  	- Defines the interface for Reader and Writer objects
-	  		- Extended for specific data formats
-	  		- **Another extensibility feature** of the program, as Data input of any format can be easily supported by using/writing a specific data-format parser and defining the declared functions in the extended class definition
+	  		- Extend for specific data formats
+	  		- **Another extensibility feature:** Data input of any format can be easily supported by
+	  			- using/writing a data-format specific parser and
+	  			- defining the declared functions in the extended class definition
 	  	- Declaration of 'import' and 'export' functions
 	  - **JSONAdapter.h** | **XMLAdapter.h**
 	  	- Header only extended class definitions for respective Datatype
 	  	- **Please go through the described template of supported subset in the begining of these files(currently only JSON)**
+	  		- @ /include/JSONAdapter.h 
 	  - **DataReader.h**
 	  	- Identifies file format and call appropriate sub-routine
 	  - **Exceptions.h**
