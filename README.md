@@ -80,7 +80,7 @@
 						  - minimizes the current DataStore
 						  - sets every value in the DataStore of the current instance to the minimum value as defined for that type of Value
 						  - Used for constructing the DataInstanceOrigin
-						- isMinimumCornerOfU
+					- isMinimumCornerOfU
 							- Checks if current instance is the minimum corner of the MBB of the object it refers to
 					- get and update functions for DataInstance properties
 	  			- **DataInstanceOrigin**
@@ -106,7 +106,7 @@
 	  				- removeInstance
 	  					- remove by instance id
 	  					- update the corners and object weight
-						- update(get)Minimum(Maximum)Corner
+					- update(get)Minimum(Maximum)Corner
 							- Updates/Returns the corners of the MBB of itself
 	  				- get and update functions for DataObject properties
 	  			- **DataObjectOrigin**
