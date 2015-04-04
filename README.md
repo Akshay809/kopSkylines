@@ -1,10 +1,10 @@
 ## Directory structure:
 - **bin**
 	- Final executable program(s) goes here
-	- included in gitignore
+	- will include in gitignore later
 - **build**
 	- intermediate object files generated during compilation goes here
-	- included in git ignore
+	- will include in git ignore later
 - **data**
 	- Data source files needed by the program goes here
 	- all data format (including .dat, .csv, .xlsx, .json, .xml) are allowed, but only JSON-subset is supported currently
@@ -40,12 +40,11 @@
 			  			- updates current value, if possible, to the value of object V
 			  			- needed as 'Value' is an exclusive property of derived classes and we use base class reference
 					- minimize
-							- sets the value to minimum as per the MIN defined for that type
+						- sets the value to minimum as per the MIN defined for that type
 					-	createCopy
-							- used like a copy constructor, only the value object of the same type is constructed and returned
-							- *because this method is virtual*
+						- used like a copy constructor, only that the value object of the same type is constructed and returned *because this method is virtual*
 					-	isDominatedBy(DataInstance|instanceSet)
-							- Checks if instance is dominated by given instance or a set of instances
+						- Checks if instance is dominated by given instance or a set of instances
 	  		- **DataInstance**
 	  			- **Properties**
 	  				- unique instance id
