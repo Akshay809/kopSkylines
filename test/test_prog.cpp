@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#include <JSONReader.h>
+#include <DataReader.h>
 
 using namespace std;
 
