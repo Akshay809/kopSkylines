@@ -68,7 +68,7 @@
 	  				- Initializes id and properties
 	  			- **Methods**
 		  			  - isMinimumCornerOfU
-								- Checks if current instance is the minimum corner of the MBB of the object it refers to
+									- Checks if current instance is the minimum corner of the MBB of the object it refers to
 					  - isDominatedBy(I)
 						  - Checks if current instance is dominated by I
 						  - uses the "compareWith" function for every pair of DataValues corresponding to each attribute
@@ -82,7 +82,7 @@
 						  - minimizes the current DataStore
 						  - sets every value in the DataStore of the current instance to the minimum value as defined for that type of Value
 						  - Used for constructing the DataInstanceOrigin
-						- get and update functions for DataInstance properties
+					- get and update functions for DataInstance properties
 	  			- **DataInstanceOrigin**
 	  				- First '0 weight' instance created, referring DataObjectOrigin
 	  				- static member
@@ -99,8 +99,8 @@
 	  				- No parameters required
 	  				- Initializes id and properties
 	  			- **Methods**
-							- update(get)Minimum(Maximum)Corner
-								- Updates/Returns the corners of the MBB of itself
+								- update(get)Minimum(Maximum)Corner
+									- Updates/Returns the corners of the MBB of itself
 	  				- addInstance
 	  					- Adds a "deep-copy" of the instance to the list
 	  					- updates the corners and object weight
