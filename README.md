@@ -149,6 +149,8 @@
 		- kop.cpp - Definition of functions specific to kop Algorithm
 - **test**
 	- main programs(for test) directory
+	- **dataGenerator**
+		- To generate data according to different experimental needs
 - **Makefile**
 	- currently defined the structure, will correct it on completion
 	- To compile code currently use 
