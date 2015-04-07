@@ -1,70 +1,33 @@
 #include <Skyline.h>
+#include <RTree.h>
+#include <Heap.h>
 #include <unordered_set>
+#include <map>
 
 using namespace std;
 
-void TopDown::findSkyline() {
+objectSet& p_TopDown(objectSet& data, double p) {
 
-	map<int, ObjectInfo*> about;
-	unordered_set<int> nonSkylineIds;
-	instanceSet minimumCorners, maximumCorners;
+	objectSet Skyline;
 
-	objectSet::iterator itr = data.begin();
-	while(itr!=data.end()) {
-	
-		int id = *itr->getID();
-		DataInstance& Umin = *itr->getMinimumCorner();
-		DataInstance& Umax = *itr->getMaximumCorner();
-	
-		vector<int> v;
-		ObjectInfo info(0,1,v);
-		about[id] = &info;
+	/*Probability bounds*/
+	double *pHi = new double[data.size()];
+	double *pLo = new double[data.size()];
+	int lastUsedIndex = 0;
+	vector<DataInstances> Umins;
 
-		minimumCorners.push_back(&Umin);
-		maximumCorners.push_back(&Umax);
-		itr++;
+	/*Saving a map of DataObject vs Probability array index, just in case an element gets removed from vector, It won't effect as order no longer matters*/
+	map<DataObject*,int> indexOf;
+	objectSet::iterator itr;
+	for(itr=data.begin();itr!=data.end();++itr) {
+		indexOf[*itr] = ++lastUsedIndex;
+			pHi[lastUsedIndex] = 1;
+			pLo[lastUsedIndex] = 0;
+		Umins.push_back((*itr)->Umin);
 	}
 
-	Rtree GlobalRT(minimumCorners);
-	Heap H(minimumCorners);
+	RTree T(Umins); // Build an RTree to store all Umins
+	Heap H(Umins); // Build a heap on instances, currently on Umin
 
-	objectSet::iterator itr = data.begin();
-	while(itr!=data.end()) {
-		int id = *itr.getID();
-		DataInstance &Umax = *itr.getMaximumCorner();
-		vector<int>& v = about[id]->DominatingObjectIDs;
-		GlobalRT.search(DataInstance::Origin, Umax, v);
-		itr++;
-	}
-
-	//Define origin of an instance
-
-	while(H.isNotEmpty()) {
-		DataInstance& u = H.top();
-		DataObject& U = u.getObjectRef();
-		H.pop();
-		if(nonSkylineIds.find(U.getID())!=nonSkylineIds.end())
-			continue;
-		if(isDominated(u, maximumCorners)) {
-			// update layer, Line 20 as in algo
-		}
-		if(u.isMinimumCornerOfU()) {
-			/*Line 13-16*/
-			vector<int>& v = about[U.getID()]->DominatingObjectIDs;
-			if(v.size()==1)	continue;
-			int Pu = computeSkylineProbabilityOf(u, PossibleDominatingObjectsIDs);
-			if(Pu>=threshold) {
-				partition(U);
-			}
-			else {
-				nonSkylineIds.push_back(U.getID());
-				continue;
-			}
-		}
-		else {
-			/*Line 18-28*/
-		}
-	}
-
-	return;
+	return Skyline;
 }
