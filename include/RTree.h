@@ -6,7 +6,7 @@ using namespace std;
 
 class RTree {
 public:
-	RTree(vector<DataInstance> instances);
+	RTree(instanceSet instances);
 	void search(DataInstance& From, DataInstance& To, vector<int>& ans);
 	~RTree();
 };

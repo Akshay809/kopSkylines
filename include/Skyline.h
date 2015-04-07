@@ -1,11 +1,8 @@
-#ifndef SKYLIN_H
-#define SKYLIN_H
+#ifndef SKYLINE_H
+#define SKYLINE_H
 
 #include <Data.h>
 #include <DataReader.h>
-#include <Rtree.h>
-#include <Heap.h>
-#include <unordered_set>
 
 using namespace std;
 
