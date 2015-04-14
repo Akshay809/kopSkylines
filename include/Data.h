@@ -8,8 +8,9 @@
 using namespace std;
 
 class DataValue {
-private:
+protected:
 	int type;
+	double HashValue;
 public:
  	DataValue(int type): type(type) {}
 	// CompareWith(I): return -1 if lesser, 0 if equal, 1 if greater, 2 if can't be compared
@@ -18,10 +19,13 @@ public:
 	virtual void updateTo(DataValue&) = 0;
 	virtual void* objectReference() = 0;
 	virtual void minimize() = 0;
+	virtual void setHash() = 0;
 
  	int getType() { return type; }
 	void updateIfLargerThan(DataValue&);
 	void updateIfSmallerThan(DataValue&);
+	double getHash() { return HashValue; }
+
 	virtual DataValue& createCopy() = 0;
 	virtual void printDataValue() = 0;
 };
@@ -30,16 +34,19 @@ class IntDataValue : public DataValue {
 private:
 	int value;
 public:
-	static int min;
+	static double MIN_HASH;
 	static const int type;
-	IntDataValue(int value): value(value), DataValue(IntDataValue::type) {}
+	IntDataValue(int value): value(value), DataValue(IntDataValue::type) {
+		this->setHash();
+	}
 
 	void* objectReference() { return this; }
 	int getValue() { return value; }
 
 	int compareWith(DataValue&);
 	void updateTo(DataValue&);
-	void minimize() {	value = min; }
+	void minimize() { value = min; this->setHash(); }
+	void setHash();
 	DataValue& createCopy();
 	void printDataValue();
 };
@@ -50,16 +57,19 @@ class DoubleDataValue : public DataValue {
 private:
 	double value;
 public:
-	static double min;
+	static double MIN_HASH;
 	static const int type;
-	DoubleDataValue(double value): value(value), DataValue(DoubleDataValue::type) {}
+	DoubleDataValue(double value): value(value), DataValue(DoubleDataValue::type) {
+		this->setHash();
+	}
 
 	void* objectReference() { return this; }
 	double getValue() { return value; }
 
 	int compareWith(DataValue&);
 	void updateTo(DataValue&);
-	void minimize() {	value = min; }
+	void minimize() { value = min; this->setHash(); }
+	void setHash();
 	DataValue& createCopy();
 	void printDataValue();
 };
@@ -70,16 +80,19 @@ class StringDataValue : public DataValue {
 private:
 	string value;
 public:
-	static string min;
+	static double MIN_HASH;
 	static const int type;
-	StringDataValue(string value): value(value), DataValue(StringDataValue::type) {}
+	StringDataValue(string value): value(value), DataValue(StringDataValue::type) {
+		this->setHash();
+	}
 
 	void* objectReference() { return this; }
 	string getValue() { return value; }
 
 	int compareWith(DataValue&);
 	void updateTo(DataValue&);
-	void minimize() {	value = min; }
+	void minimize() { value = min; this->setHash(); }
+	void setHash();
 	DataValue& createCopy();
 	void printDataValue();
 };

@@ -49,7 +49,7 @@ bool DataInstance::isDominatedBy(DataInstance& I) {
 		if(itrU->second==NULL || itrI->second==NULL) {
 			return false;
 		}
-		//IMP: Using strictly less than as preference function for each attribute, thus -1
+		//IMP: Do not modify this, refer to setHash in DataValue.cpp, Using strictly less than as preference function for each attribute, thus -1
 		if((itrU->second)->compareWith(*(itrI->second)) == -1)
 			return false;
 		itrU++;
