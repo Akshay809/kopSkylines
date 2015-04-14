@@ -60,7 +60,7 @@ bool DataInstance::isDominatedBy(DataInstance& I) {
 bool DataInstance::isDominatedBy(instanceSet& set) {
 	instanceSet::iterator itr = set.begin();
 	while(itr!=set.end()) {
-		if(this->isDominatedBy(*itr++));
+		if(this->isDominatedBy(*itr++))
 			return true;
 	}
 	return false;
@@ -73,7 +73,7 @@ void DataInstance::minimizeWRT(DataInstance& I) {
 	while(itrU!=dataStore.end()) {
 		itrI = dataStoreOfI.find(itrU->first);
 
-		if ( itrI==dataStoreOfI.end() || itrI->second==NULL) {
+		if ( itrI==dataStoreOfI.end() || itrI->second==NULL ) {
 			itrU++;
 			continue;
 		}

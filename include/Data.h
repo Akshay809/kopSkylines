@@ -45,7 +45,7 @@ public:
 
 	int compareWith(DataValue&);
 	void updateTo(DataValue&);
-	void minimize() { value = min; this->setHash(); }
+	void minimize() { HashValue = MIN_HASH; }
 	void setHash();
 	DataValue& createCopy();
 	void printDataValue();
@@ -68,7 +68,7 @@ public:
 
 	int compareWith(DataValue&);
 	void updateTo(DataValue&);
-	void minimize() { value = min; this->setHash(); }
+	void minimize() { HashValue = MIN_HASH; }
 	void setHash();
 	DataValue& createCopy();
 	void printDataValue();
@@ -91,7 +91,7 @@ public:
 
 	int compareWith(DataValue&);
 	void updateTo(DataValue&);
-	void minimize() { value = min; this->setHash(); }
+	void minimize() { HashValue = MIN_HASH; }
 	void setHash();
 	DataValue& createCopy();
 	void printDataValue();
