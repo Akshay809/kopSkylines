@@ -24,14 +24,14 @@ void FileReader::readFileToString() {
 }
 
 
-void importData(FileReader& reader, objectSet& data) {
+void importData(FileReader& reader, vector<DataObject*>& data) {
 	while(reader.hasNextObject()) {
 		DataObject * obj = new DataObject();
-		reader.readNextObject(*obj);
-		data.push_back(obj);
+		if(reader.readNextObject(*obj))
+			data.push_back(obj);
 	}
 }
 
-void exportData(FileWriter& writer, const objectSet& data) {
+void exportData(FileWriter& writer, const vector<DataObject*>& data) {
 	// Definition goes here!!
 }

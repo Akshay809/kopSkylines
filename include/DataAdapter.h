@@ -13,7 +13,7 @@ class FileReader {
 protected:
 	string inputFile;
 	ifstream infile;
-	map<string, int> AttributeList;
+	map<string, int> AttributeIndex;
 	char * c_file;
 public:
 
@@ -21,11 +21,11 @@ public:
 
 	virtual	void validateDataAndInitAttrList() {}
 
-					void readFileToString();
+			void readFileToString();
 	virtual bool hasNextLine() {}
-					void readNextLine(vector<string>&, char);
+			void readNextLine(vector<string>&, char);
 	virtual bool hasNextObject() { return hasNextLine(); }
-	virtual void readNextObject(DataObject&) {}
+	virtual bool readNextObject(DataObject&) {}
 
 	virtual void createDummyInstance(DataInstance&) {}
 
@@ -43,8 +43,8 @@ public:
 	// ~FileWriter();
 };
 
-void importData(FileReader&, objectSet&);
+void importData(FileReader&, vector<DataObject*>&);
 
-void exportData(FileWriter&, const objectSet&);
+void exportData(FileWriter&, const vector<DataObject*>&);
 
 #endif

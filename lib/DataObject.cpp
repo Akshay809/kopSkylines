@@ -7,7 +7,7 @@ int DataObject::totalObjects = 0;
 DataObject DataObject::Origin;
 
 void DataObject::updateMinimumCorner() {
-	instanceSet::iterator itr = instances.begin();
+	vector<DataInstance>::iterator itr = instances.begin();
 
 	Umin = *itr++;
 	while(itr!=instances.end())
@@ -15,7 +15,7 @@ void DataObject::updateMinimumCorner() {
 }
 
 void DataObject::updateMaximumCorner() {
-	instanceSet::iterator itr = instances.begin();
+	vector<DataInstance>::iterator itr = instances.begin();
 
 	Umax = *itr++;
 	while(itr!=instances.end())
@@ -29,10 +29,10 @@ void DataObject::updateCorners() {
 
 void DataObject::addInstance(DataInstance& I) {
 	/*Implement instance check*/
-	if(I.getObjectID()==id && I.getWeight()>0) {
+	if(I.getObjectID()==id && I.weight>0) {
 		/*copy of the instance will be pushed*/
 		instances.push_back(I);
-		objectWeight += I.getWeight();
+		objectWeight += I.weight;
 		updateCorners();
 		DataInstance::Origin = I;
 		// instancesAdded++;
@@ -40,14 +40,15 @@ void DataObject::addInstance(DataInstance& I) {
 }
 
 void DataObject::removeInstance(DataInstance &I) {
-	removeInstance(I.getInstanceID());
+	if(I.getObjectID()==id)
+		removeInstance(I.getInstanceID());
 }
 
 void DataObject::removeInstance(int instanceID) {
-	instanceSet::iterator itr = instances.begin();
+	vector<DataInstance>::iterator itr = instances.begin();
 	while(itr!=instances.end()) {
-		if(itr->getInstanceID()==instanceID && itr->getObjectID()==id) {
-			objectWeight -= itr->getWeight();
+		if(itr->getInstanceID()==instanceID) {
+			objectWeight -= itr->weight;
 			instances.erase(itr);
 			updateCorners();
 			break;
@@ -57,18 +58,17 @@ void DataObject::removeInstance(int instanceID) {
 }
 
 void DataObject::printDataObject() {
-	cout << "\nObject::Id: " << id << endl;
-	cout << "Object::Weight: " << objectWeight << endl;
-	cout << "Object::Object Memory Location: " << this << endl;
-	cout << "Object::Instances\n";
+	cout << "\n\n  Object::Id: " << id << endl;
+	cout << "  Object::Weight: " << objectWeight << endl;
+	cout << "  Object::Object Memory Location: " << this << endl;
 	cout << "  Object::Instances Total Count: " << instances.size() << endl;
-	instanceSet::iterator itr = instances.begin();
+	vector<DataInstance>::iterator itr = instances.begin();
 	while(itr!=instances.end()) {
 		itr->printDataInstance();
 		itr++;
 	}
-	cout << "\nObject::Umin " << endl;
+	cout << "  Object::Umin " << endl;
 	Umin.printDataInstance();
-	cout << "\nObject::Umax " << endl;
+	cout << "  Object::Umax " << endl;
 	Umax.printDataInstance();
 }
