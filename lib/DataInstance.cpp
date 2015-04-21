@@ -49,7 +49,7 @@ bool DataInstance::isDominatedBy(DataInstance& I) {
 		if(itrU->second==NULL || itrI->second==NULL) {
 			return false;
 		}
-		//IMP: Using strictly less than as preference function for each attribute, thus -1
+		//IMP: Do not modify this, refer to setHash in DataValue.cpp, Using strictly less than as preference function for each attribute, thus -1
 		if((itrU->second)->compareWith(*(itrI->second)) == -1)
 			return false;
 		itrU++;
@@ -60,7 +60,7 @@ bool DataInstance::isDominatedBy(DataInstance& I) {
 bool DataInstance::isDominatedBy(instanceSet& set) {
 	instanceSet::iterator itr = set.begin();
 	while(itr!=set.end()) {
-		if(this->isDominatedBy(*itr++));
+		if(this->isDominatedBy(*itr++))
 			return true;
 	}
 	return false;
@@ -73,7 +73,7 @@ void DataInstance::minimizeWRT(DataInstance& I) {
 	while(itrU!=dataStore.end()) {
 		itrI = dataStoreOfI.find(itrU->first);
 
-		if ( itrI==dataStoreOfI.end() || itrI->second==NULL) {
+		if ( itrI==dataStoreOfI.end() || itrI->second==NULL ) {
 			itrU++;
 			continue;
 		}

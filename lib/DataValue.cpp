@@ -3,6 +3,12 @@
 
 using namespace std;
 
+/*
+	Minimum Hash Value = 0
+	Smaller Hash Value => higher preference
+	Negative Hash Value => Undefined Value, non-comparable
+*/
+
 void DataValue::updateIfLargerThan(DataValue& I) {
 	if(this->compareWith(I)==1)
 		this->updateTo(I);
@@ -13,15 +19,18 @@ void DataValue::updateIfSmallerThan(DataValue& I) {
 		this->updateTo(I);
 }
 
-int IntDataValue::min = 0;
+double IntDataValue::MIN_HASH = 0.0;
 const int IntDataValue::type = 1; //Should be unique
 
 int IntDataValue::compareWith(DataValue &I) {
 	if(type!=I.getType()) return 2;
-	/*TODO|Upgrade: Can compare values of two different types. e.g. comparing 'int' with 'hexadecimal' type, change the typecasting below accordingly*/
+	/*TODO|Upgrade: Comparing different types, e.g. integer and string are non-comparable while hexadecimal is comparable to integer*/
+
+	//Same Datatype case
 	IntDataValue * Iptr = (IntDataValue*)I.objectReference();
-	int Ivalue = Iptr->getValue();
-	if(this->value < Ivalue) return -1;
+	double Ivalue = Iptr->getHash();
+	if(Ivalue<0 || this->HashValue<0) return 2;
+	if(this->HashValue < Ivalue) return -1;
 	else if(Ivalue == this->value) return 0;
 	return 1;
 }
@@ -37,18 +46,24 @@ DataValue& IntDataValue::createCopy() {
 	return *newVal;
 }
 
+void IntDataValue::setHash() {
+	/*Define hash function such that more preferred value gets lesser HashValue*/
+	HashValue = (double)value;
+}
+
 void IntDataValue::printDataValue() {
 	cout << "(integer) " << value << " @ " << this << endl;
 }
 
-double DoubleDataValue::min = 0.0;
+double DoubleDataValue::MIN_HASH = 0.0;
 const int DoubleDataValue::type = 2; //Should be unique
 
 int DoubleDataValue::compareWith(DataValue& I) {
 	if(type!=I.getType()) return 2;
 
 	DoubleDataValue * Iptr = (DoubleDataValue*)I.objectReference();
-	double Ivalue = Iptr->getValue();
+	double Ivalue = Iptr->getHash();
+	if(Ivalue<0 || this->HashValue<0) return 2;
 	if(this->value < Ivalue) return -1;
 	else if(Ivalue == this->value) return 0;
 	return 1;
@@ -65,11 +80,16 @@ DataValue& DoubleDataValue::createCopy() {
 	return *newVal;
 }
 
+void DoubleDataValue::setHash() {
+	/*Define hash function such that more preferred value gets lesser HashValue*/
+	HashValue = (double)value;
+}
+
 void DoubleDataValue::printDataValue() {
 	cout << "(double) " << value << " @ " << this << endl;
 }
 
-string StringDataValue::min = "";
+double StringDataValue::MIN_HASH = 0.0;
 const int StringDataValue::type = 3; //Should be unique
 
 int StringDataValue::compareWith(DataValue &I) {
@@ -87,6 +107,11 @@ void StringDataValue::updateTo(DataValue &I) {
 DataValue& StringDataValue::createCopy() {
 	DataValue * newVal = new StringDataValue(value);
 	return *newVal;
+}
+
+void StringDataValue::setHash() {
+	/*Define hash function such that more preferred value gets lesser HashValue*/
+	HashValue = -1.0;
 }
 
 void StringDataValue::printDataValue() {
