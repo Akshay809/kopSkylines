@@ -11,7 +11,7 @@ int DataInstance::getObjectID() { return Object.getID(); }
 DataInstance& DataInstance::operator= (const DataInstance& I) {
 	if(this!=&I) {
 		/*Performming deep copy*/
-		dataStore = I.dataStore;
+		dataStore = I.getDataStore();
 		/*Check for origin and minimize*/
 		if(this->instanceId==1)
 			minimizeDS();
@@ -19,8 +19,13 @@ DataInstance& DataInstance::operator= (const DataInstance& I) {
 	return *this;
 }
 
+void DataInstance::updateDS(vector<double>& newDataStore) { 
+	if(dataStore.size()==0 || dataStore.size()==newDataStore.size())
+		dataStore = newDataStore;
+}
+
 bool DataInstance::isDominatedBy(DataInstance& I) {
-	vector<double> dataStoreOfI = I.dataStore;
+	vector<double> dataStoreOfI = I.getDataStore();
 	if(dataStoreOfI.size()!=dataStore.size()) return false;
 	for(int i = 0; i < dataStore.size(); ++i) {
 		if(dataStore[i] < dataStoreOfI[i])
@@ -39,7 +44,7 @@ bool DataInstance::isDominatedBy(vector<DataInstance>& set) {
 }
 
 void DataInstance::minimizeWRT(DataInstance& I) {
-	vector<double> dataStoreOfI = I.dataStore;
+	vector<double> dataStoreOfI = I.getDataStore();
 	DataStoreIterator itrI, itrU = dataStore.begin();
 	for(int i = 0; i < dataStore.size(); ++i) {
 		if(dataStore[i] > dataStoreOfI[i])
@@ -48,7 +53,7 @@ void DataInstance::minimizeWRT(DataInstance& I) {
 }
 
 void DataInstance::maximizeWRT(DataInstance& I) {
-	vector<double> dataStoreOfI = I.dataStore;
+	vector<double> dataStoreOfI = I.getDataStore();
 	DataStoreIterator itrI, itrU = dataStore.begin();
 	for(int i = 0; i < dataStore.size(); ++i) {
 		if(dataStore[i] < dataStoreOfI[i])

@@ -16,9 +16,9 @@ class DataInstance {
 private:
 	int instanceId;
 	DataObject& Object;
+	vector<double> dataStore;
 public:
 	int weight;
-	vector<double> dataStore;
 
 	static int totalInstances;
 	static DataInstance Origin;
@@ -28,7 +28,11 @@ public:
 
 	int getObjectID();
 	int getInstanceID() { return instanceId; }
+	const int getInstanceID() const { return instanceId; }
 	DataObject& getObjectRef() { return Object; }
+	const vector<double>& getDataStore() const { return dataStore; }
+
+	void updateDS(vector<double>&);
 
 	/*R1: Lesser value preferred*/
 	bool isDominatedBy(DataInstance&);
@@ -70,5 +74,12 @@ public:
 
 	void printDataObject();
 };
+
+struct Rectangle{
+	DataInstance& lowerEnd;
+	DataInstance& upperEnd;
+	Rectangle(DataInstance& lowerEnd, DataInstance& upperEnd): lowerEnd(lowerEnd), upperEnd(upperEnd) {}
+};
+
 
 #endif

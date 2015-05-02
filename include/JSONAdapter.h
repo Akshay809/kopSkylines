@@ -132,8 +132,8 @@ bool JSONReader::readNextObject(DataObject& object) {
 		DataInstance newInstance(object);
 		const Value& instance = *instanceItr;
 
-		vector<double>& dataStore = newInstance.dataStore;
-		dataStore.resize(AttributeIndex.size());
+		vector<double> newDataStore;
+		newDataStore.resize(AttributeIndex.size());
 
 		int insertCount = 0;
 		Value::ConstMemberIterator itr;
@@ -143,15 +143,16 @@ bool JSONReader::readNextObject(DataObject& object) {
 			int index = AttributeIndex[attr];
 
 			if(itr->value.IsInt())
-				dataStore[index] = (double)(itr->value.GetInt());
+				newDataStore[index] = (double)(itr->value.GetInt());
 			else
-				dataStore[index] = itr->value.GetDouble();
+				newDataStore[index] = itr->value.GetDouble();
 
 			insertCount++;
 		}
 		if(insertCount<AttributeIndex.size()) throw InvalidDataException("Missing values");
 
 		newInstance.weight = itr->value.GetInt();
+		newInstance.updateDS(newDataStore);
 		object.addInstance(newInstance);
 	}
 	NextObjectToRead++;

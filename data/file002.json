@@ -42,7 +42,7 @@
 					"Weight": 30
 				},
 				{
-					"distance": 30,
+					"distance": 25,
 					"time": 8.0,
 					"Weight": 20
 				},
@@ -61,7 +61,7 @@
 		{
 			"instances": [
 				{
-					"distance": 30,
+					"distance": 15,
 					"time": 3.0,
 					"Weight": 10
 				},
@@ -73,6 +73,15 @@
 				{
 					"distance": 45,
 					"time": 6.0,
+					"Weight": 10
+				}
+			]
+		},
+		{
+			"instances": [
+				{
+					"distance": 10,
+					"time": 2.0,
 					"Weight": 10
 				}
 			]

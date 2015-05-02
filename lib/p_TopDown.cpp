@@ -26,7 +26,7 @@ objectSet& p_TopDown(objectSet& data, double p) {
 	double *pHi = new double[data.size()];
 	double *pLo = new double[data.size()];
 	int lastUsedIndex = 0;
-	vector<DataInstances> Umins, Umaxs;
+	vector<DataInstance> Umins, Umaxs;
 
 	/* 3 options: 
 		- Alter original DataObject definition to have probability bounds, no,  not generic
