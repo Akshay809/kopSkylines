@@ -28,6 +28,49 @@ void findDominatingObjects(vector<DataInstance>& Umaxs, vector<vector<DataObject
 	}
 }
 
+struct partitionObject {
+	DataObject& U;
+	vector<vector<DataInstance> >& layer;
+	vector<DataInstance> instances;
+
+	partitionObject(DataObject& U, vector<vector<DataInstance> >& layer): U(U), layer(layer) {
+		instances = U.getDataInstances();
+	}
+
+	bool lower(const DataInstance& i1, const DataInstance& i2) {
+		return (i1.getKey())<(i2.getKey());
+	}
+
+	bool isDominatedAtLayer(DataInstance& I, int at) {
+		return I.isDominatedBy(layer[at]);
+	}
+
+	void partition() {
+		if(instances.size()==0) return;
+
+		std::sort(instances.begin(), instances.end(), lower);
+		vector<DataInstance>::iterator itr;
+
+		int maxLayer = 0;
+
+		for(itr = instances.begin() ; itr != instances.end(); ++itr) {
+			int correctLayer = maxLayer+1;
+			int start = 0, end = maxLayer;
+			while(start<=end) {
+				int suggestedLayer = (start+end)/2;
+				if(isDominatedAtLayer(I, suggestedLayer)) {
+					start = suggestedLayer+1;
+				}
+				else {
+					correctLayer = suggestedLayer;
+					end = suggestedLayer-1;
+				}
+			}
+			layer[correctLayer].push_back(*itr);
+		}
+	}
+};
+
 double skylineProbabilityOfInstance(DataInstance& u, vector<DataObject*>& DominatingObjects) {
 	/*Find skyline probability of u, by using a local kdTree to find dominating instances and then doing a brute-force search*/
 	double pu = 1;
@@ -67,12 +110,12 @@ objectSet& p_TopDown(objectSet& data, double p) {
 	unordered_set<int> nonSkylineIds;
 
 	/*Probability bounds*/
-	vector<double> pHi, pLo, pMax;
+	vector<double> pHi, pLo, pMax, layerMax;
 	vector<DataInstance> Umins, Umaxs;
 	vector<vector<DataObject*> > DominatingObjectsOf;
 	vector<int> weightLeft;
-	vector<vector<DataInstance*> > layers;
-
+	vector<vector<vector<DataInstance> > > layers;
+	vector<int> currentLayer;
 
 	map<DataObject*,int> indexOf;
 	int lastUsedIndex = -1;
@@ -83,10 +126,12 @@ objectSet& p_TopDown(objectSet& data, double p) {
 		pHi.push_back(1);
 		pLo.push_back(0);
 		pMax.push_back(1);
+		layerMax.push_back(0);
 		Umins.push_back((*itr)->Umin);
 		Umaxs.push_back((*itr)->Umax);
 		weightLeft.push_back((*itr)->getObjectWeight());
-		layers.push_back(vector<DataInstance*>{-1});
+		layers.push_back(vector<vector<DataInstance> >());
+		currentLayer.push_back(0);
 	}
 
 	kdTree T(Umins); // Build a kdTree to store all Umins
@@ -109,23 +154,37 @@ objectSet& p_TopDown(objectSet& data, double p) {
 		if(u.isDominatedBy(Umaxs_)) pu = 0;
 		else pu = skylineProbabilityOfInstance(u, DominatingObjectsOf[indexOf[U]]);
 
+		vector<vector<DataInstance> >& layer = layers[indexOf[U]];
+		int at = currentLayer[indexOf[U]];
+
 		if(u.getInstanceID() == U->Umin.getInstanceID()) {
 			if(pu>=p) {
-				/*TODO: partition instances of U to layers, and insert next element to heap*/
-				continue;
+				/*partition instances of U to layers*/
+				partitionObject P(*U, layers[indexOf[U]]);
+				P.partition();
+
+				/*insert next element to heap*/
+				if(layer[at].size()==0) continue;
+				vector<DataInstance>::iterator itr = layer[at].begin();
+				H.push(*itr);
+				layer[at].erase(itr);
 			}
 			else {
 				nonSkylineIds.push_back(U->getID());
-				continue;
 			}
+			continue;
 		}
 		else {
+			layerMax[indexOf[U]] = std::max(pu, layerMax[indexOf[U]]);
 			weightLeft[indexOf[U]] -= u.weight;
 			pLo[indexOf[U]] += u.getProbability() * pu;
 		}
 
-		if(u.isLastInstanceOfLayer()) {
-			/*TODO: Update pMax[indexOf[U]]*/
+		if(layer[at].size()==0) {
+			/*Update pMax[indexOf[U]]*/
+			pMax[indexOf[U]] = layerMax[indexOf[U]];
+			layerMax[indexOf[U]] = 0;
+			currentLayer[indexOf[U]]++;
 		}
 		pHi[indexOf[U]] = pLo[indexOf[U]] + pMax[indexOf[U]] * (((double)weightLeft[indexOf[U]])/U->getObjectWeight());
 
@@ -139,7 +198,12 @@ objectSet& p_TopDown(objectSet& data, double p) {
 			continue;
 		}
 
-		/*TODO: insert next element to heap*/
+		/*insert next element to heap*/
+		at = currentLayer[indexOf[U]];
+		if(layer[at].size()==0) continue;
+		vector<DataInstance>::iterator itr = layer[at].begin();
+		H.push(*itr);
+		layer[at].erase(itr);
 	}
 
 	return Skyline;

@@ -21,16 +21,14 @@ public:
 };
 
 struct Heap::lower {
-	int x;
-	lower(int x): x(x) {}
 	bool operator()(const DataInstance& i1, const DataInstance& i2) {
 		return (i1.getKey())>(i2.getKey());
 	}
-};
+}lowerObject;
 
 Heap::Heap(vector<DataInstance>& instances): instances(instances) {
 	cout << "Initializing the Heap ...." << endl;
-	std::make_heap(instances.begin(), instances.end(), lower(0));
+	std::make_heap(instances.begin(), instances.end(), lowerObject);
 }
 
 bool Heap::isEmpty() {
@@ -42,13 +40,13 @@ DataInstance& Heap::top() {
 }
 
 void Heap::pop() {
-	std::pop_heap(instances.begin(), instances.end(), lower(0));
+	std::pop_heap(instances.begin(), instances.end(), lowerObject);
 	instances.pop_back();
 }
 
 void Heap::push(DataInstance& newInstance) {
 	instances.push_back(newInstance);
-	std::push_heap(instances.begin(), instances.end(), lower(0));
+	std::push_heap(instances.begin(), instances.end(), lowerObject);
 }
 
 #endif
