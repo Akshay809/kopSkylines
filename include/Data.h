@@ -18,6 +18,7 @@ private:
 	DataObject& Object;
 	vector<double> dataStore;
 public:
+	/*Write updated copy constructor, same id instances are getting generated through copy*/
 	int weight;
 
 	static int totalInstances;
@@ -29,8 +30,11 @@ public:
 	int getObjectID();
 	int getInstanceID() { return instanceId; }
 	const int getInstanceID() const { return instanceId; }
-	DataObject& getObjectRef() { return Object; }
+	const DataObject& getObjectRef() const { return Object; }
 	const vector<double>& getDataStore() const { return dataStore; }
+	DataObject* getRefObjAdd() { return &Object; }
+	const double getKey() const;
+	double getProbability();
 
 	void updateDS(vector<double>&);
 
@@ -71,6 +75,8 @@ public:
 	void addInstance(DataInstance&); /*Check for A1*/
 	void removeInstance(int);
 	void removeInstance(DataInstance&);
+
+	const vector<DataInstance>& getDataInstances() const { return instances; }
 
 	void printDataObject();
 };

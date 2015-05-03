@@ -19,6 +19,17 @@ DataInstance& DataInstance::operator= (const DataInstance& I) {
 	return *this;
 }
 
+const double DataInstance::getKey() const {
+	double key = 0;
+	for(int i=0; i<dataStore.size(); ++i)
+		key += dataStore[i];
+	return key;
+}
+
+double DataInstance::getProbability() { 
+	return ((double)weight)/Object.getObjectWeight();
+}
+
 void DataInstance::updateDS(vector<double>& newDataStore) { 
 	if(dataStore.size()==0 || dataStore.size()==newDataStore.size())
 		dataStore = newDataStore;
