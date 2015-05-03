@@ -1,17 +1,11 @@
+#ifndef KD_TREE_H
+#define KD_TREE_H
+
 #include <Data.h>
 #include <algorithm>
 #include <unordered_set>
 
 using namespace std;
-
-struct lower {
-	vector<DataInstance>& points;
-	int dim;
-	lower(vector<DataInstance>& points, int dim): points(points), dim(dim) {}
-	bool operator()(const int i1, const int i2) {
-		return points[i1].getDataStore()[dim]<points[i2].getDataStore()[dim];
-	}
-};
 
 class kdTree {
 private:
@@ -22,16 +16,26 @@ public:
 	class TreeNode;
 	TreeNode *root;
 	struct Query;
+	struct lower;
 	kdTree(vector<DataInstance>&);
 	TreeNode* buildTree(int, int, int);
-	unordered_set<DataObject*>* searchR(Rectangle&);
-	unordered_set<DataObject*>* searchR(DataInstance& lowerEnd, DataInstance& upperEnd) {
+	vector<int>& searchR(Rectangle&);
+	vector<int>& searchR(DataInstance& lowerEnd, DataInstance& upperEnd) {
 		Rectangle *R = new Rectangle(lowerEnd, upperEnd);
 		return searchR(*R);
 	}
 	void printTree();
 	// Rectangle& region(TreeNode*);
 	~kdTree() {}
+};
+
+struct kdTree::lower {
+	vector<DataInstance>& points;
+	int dim;
+	lower(vector<DataInstance>& points, int dim): points(points), dim(dim) {}
+	bool operator()(const int i1, const int i2) {
+		return points[i1].getDataStore()[dim]<points[i2].getDataStore()[dim];
+	}
 };
 
 class kdTree::TreeNode {
@@ -85,7 +89,7 @@ kdTree::TreeNode* kdTree::buildTree(int startIndex, int endIndex, int depth) {
 
 	vector<int>::iterator startItr = indices.begin();
 	/*change points array such that nth element is in the correct position*/
-	std::nth_element(startItr+startIndex, startItr+midIndex, startItr+endIndex+1, lower(points,dim));
+	std::nth_element(startItr+startIndex, startItr+midIndex, startItr+endIndex+1, kdTree::lower(points,dim));
 	TreeNode* root = new TreeNode(indices[midIndex]);
 
 /*	if(endIndex==startIndex+1)
@@ -107,7 +111,7 @@ Rectangle& region(kdTree::TreeNode* root) {
 
 struct kdTree::Query {
 	Rectangle& R;
-	unordered_set<DataObject*> ans;
+	vector<int> ans;
 	vector<DataInstance>& points;
 	Query(Rectangle& R, vector<DataInstance>& points): R(R), points(points) {}
 	bool containsPoint(DataInstance& point) {
@@ -138,8 +142,8 @@ struct kdTree::Query {
 	void report(TreeNode* root) {
 		// cout << "Reporting " << root->splitIndex << endl;
 		if(root->isLeaf()) {
-			DataInstance& point = points[root->splitIndex];
-			ans.insert(&(point.getObjectRef()));
+			// DataInstance& point = points[root->splitIndex];
+			ans.push_back(root->splitIndex);
 			return;
 		}
 		report(root->left);
@@ -151,7 +155,8 @@ struct kdTree::Query {
 			DataInstance& point = points[root->splitIndex];
 			if(containsPoint(point)) {
 				// cout << "  Contains Point " << root->splitIndex << endl;
-				ans.insert(&(point.getObjectRef()));
+				// cout << &point << endl;
+				ans.push_back(root->splitIndex);
 			}
 		}
 		else {
@@ -182,13 +187,14 @@ struct kdTree::Query {
 	}
 };
 
-unordered_set<DataObject*>* kdTree::searchR(Rectangle& R) {
-	Query object(R, points);
+vector<int>& kdTree::searchR(Rectangle& R) {
+	Query *object = new Query(R, points);
 	cout << "Searching in kd-tree...." << endl;
-	object.searchIn(root);
-	unordered_set<DataObject*> * ans = new unordered_set<DataObject*>();
-	*ans = object.ans;
-	return ans;
+	object->searchIn(root);
+	// vector<int>* ans = new vector<int>();
+	// *ans = object.ans;
+	// return *ans;
+	return object->ans;
 }
 
 void _printTree(kdTree::TreeNode *root, vector<DataInstance>& points) {
@@ -208,3 +214,5 @@ void _printTree(kdTree::TreeNode *root, vector<DataInstance>& points) {
 void kdTree::printTree() {
 	_printTree(root, points);
 }
+
+#endif
