@@ -32,6 +32,7 @@ void importData(FileReader& reader, vector<DataObject*>& data) {
 	}
 }
 
-void exportData(FileWriter& writer, const vector<DataObject*>& data) {
-	// Definition goes here!!
+void exportData(FileWriter& writer, vector<DataObject*>& skyline) {
+	for(vector<DataObject*>::iterator itr = skyline.begin(); itr != skyline.end(); ++itr)
+		writer.writeNextObject(**itr);
 }

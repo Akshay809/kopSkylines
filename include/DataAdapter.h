@@ -37,14 +37,18 @@ public:
 class FileWriter {
 protected:
 	string outputFile;
+	ofstream outfile;
 public:
-	FileWriter(const string outputFile) : outputFile(outputFile) {}
-	virtual void writeNextLine(DataInstance&) = 0;
-	// ~FileWriter();
+	FileWriter(const string outputFile) : outfile(outputFile.c_str()), outputFile(outputFile) {}
+	virtual void writeNextLine(DataInstance&) {}
+	virtual void writeNextObject(DataObject&) {}
+	~FileWriter() {
+		outfile.close();
+	}
 };
 
 void importData(FileReader&, vector<DataObject*>&);
 
-void exportData(FileWriter&, const vector<DataObject*>&);
+void exportData(FileWriter&, vector<DataObject*>&);
 
 #endif

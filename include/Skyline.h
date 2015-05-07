@@ -3,6 +3,7 @@
 
 #include <Data.h>
 #include <DataReader.h>
+#include <DataWriter.h>
 
 using namespace std;
 
@@ -22,12 +23,10 @@ objectSet& kop_(objectSet&, double, int);
 
 class Skyline {
 private:
-	objectSet& data, Skyline;
-	string Fname;
 public:
-	Skyline(string file_name): Fname(file_name) {
-		objectSet& data = readData(Fname);
-	}
+	string Fname;
+	objectSet& data;
+	Skyline(string file_name): Fname(file_name), data(readData(file_name)) {}
 
 	/*TODO: Add preference relation specification*/
 
@@ -35,10 +34,26 @@ public:
 	/*Locationally Uncertain Data <=> Multi-instance instanceSet for atleast one object*/
 	/*Existentially Uncertain Data <=> TODO: need to modfiy current weight allocation schema*/
 
-	virtual void findSkyline() {}				//full-Skyline
-	virtual void findSkyline(int k) {}			//k-Skyline
-	virtual void findSkyline(double p) {}		//p-Skyline
-	virtual void findSkyline(double p, int k) {}	//kop-Skyline
+	void findSkyline();					//full-Skyline
+	void findSkyline(int k);			//k-Skyline
+	void findSkyline(double p);			//p-Skyline
+	void findSkyline(double p, int k);	//kop-Skyline
 
-	~Skyline();	
+	~Skyline() {
+	}
 };
+
+void Skyline::findSkyline() {}
+
+void Skyline::findSkyline(int k) {}
+
+void Skyline::findSkyline(double p) {
+	string outFileName = "./../data/skyline_data/result.json";
+	objectSet& Skyline = p_BottomUp(data, p);
+	cout << Skyline.size() << endl;
+	// writeData(outFileName, Skyline);
+}
+
+void Skyline::findSkyline(double p, int k) {}
+
+#endif

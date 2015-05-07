@@ -35,6 +35,11 @@ void DataInstance::updateDS(vector<double>& newDataStore) {
 		dataStore = newDataStore;
 }
 
+void DataInstance::updateNS(vector<string>& newNameStore) { 
+	if(nameStore.size()==0 || nameStore.size()==newNameStore.size())
+		nameStore = newNameStore;
+}
+
 bool DataInstance::isDominatedBy(DataInstance& I) {
 	vector<double> dataStoreOfI = I.getDataStore();
 	if(dataStoreOfI.size()!=dataStore.size()) return false;
@@ -42,14 +47,22 @@ bool DataInstance::isDominatedBy(DataInstance& I) {
 		if(dataStore[i] < dataStoreOfI[i])
 			return false;
 	}
-	return true;
+	for(int i = 0; i < dataStore.size(); ++i) {
+		if(dataStore[i] != dataStoreOfI[i])
+			return true;
+	}
+	return false;
 }
 
 bool DataInstance::isDominatedBy(vector<DataInstance>& set) {
 	vector<DataInstance>::iterator itr = set.begin();
 	while(itr!=set.end()) {
-		if(this->isDominatedBy(*itr++))
+		if(this->isDominatedBy(*itr++)) {
+			// this->printDataInstance();
+			// cout << "is dominated by" << endl;
+			// (itr-1)->printDataInstance();
 			return true;
+		}
 	}
 	return false;
 }

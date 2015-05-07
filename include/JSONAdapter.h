@@ -65,9 +65,40 @@ public:
 
 class JSONWriter : public FileWriter {
 public:
-	JSONWriter(const string outputFile) : FileWriter(outputFile) {}
-	void writeNextLine(DataInstance& instance);
-	// ~JSONWriter();
+	JSONWriter(const string outputFile) : FileWriter(outputFile) {
+		/*Write: { "objects": [ */
+		outfile << "{ \"objects\": [" << endl;
+	}
+	void writeKeyValuePair(string key, double value) {
+		/* Key: value, */
+		outfile << "\t\t\t" << key << ": " << value << "," << endl;
+	}
+	void writeNextInstance(DataInstance& I) {
+		/* { */
+		outfile << "\t\t{" << endl;
+		/* writeAllKeyValuePairs() */
+		vector<double> dataStore = I.getDataStore();
+		vector<string> nameStore = I.getNameStore();
+		for(int i=0; i<dataStore.size(); i++)
+			writeKeyValuePair(nameStore[i], dataStore[i]);
+		/* 				}, */
+		outfile << "\t\t}," << endl;
+	}
+	void writeNextObject(DataObject& O) {
+		/* { "instances": [ */
+		outfile << "\t{ \"instances\": [" << endl;
+		/* writeAllNextInstances() */
+		vector<DataInstance> instances = O.getDataInstances();
+		for(vector<DataInstance>::iterator itr = instances.begin(); itr != instances.end(); ++itr) {
+			writeNextInstance(*itr);
+		}
+		/* 				] }, */
+		outfile << "\t] }," << endl;
+	}
+	~JSONWriter() {
+		/*Write: 	] }*/
+		outfile << "] }\n";
+	}
 };
 
 void JSONReader::validateDataAndInitAttrList() {
@@ -133,7 +164,9 @@ bool JSONReader::readNextObject(DataObject& object) {
 		const Value& instance = *instanceItr;
 
 		vector<double> newDataStore;
+		vector<string> newNameStore;
 		newDataStore.resize(AttributeIndex.size());
+		newNameStore.resize(AttributeIndex.size());
 
 		int insertCount = 0;
 		Value::ConstMemberIterator itr;
@@ -142,6 +175,7 @@ bool JSONReader::readNextObject(DataObject& object) {
 			string attr = itr->name.GetString();
 			int index = AttributeIndex[attr];
 
+			newNameStore[index] = attr;
 			if(itr->value.IsInt())
 				newDataStore[index] = (double)(itr->value.GetInt());
 			else
@@ -153,6 +187,7 @@ bool JSONReader::readNextObject(DataObject& object) {
 
 		newInstance.weight = itr->value.GetInt();
 		newInstance.updateDS(newDataStore);
+		newInstance.updateNS(newNameStore);
 		object.addInstance(newInstance);
 	}
 	NextObjectToRead++;
