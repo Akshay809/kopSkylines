@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <map>
+#include <string>
 
 using namespace std;
 
@@ -17,6 +18,7 @@ private:
 	int instanceId;
 	DataObject& Object;
 	vector<double> dataStore;
+	vector<string> nameStore;
 public:
 	/*Write updated copy constructor, same id instances are getting generated through copy*/
 	int weight;
@@ -32,11 +34,13 @@ public:
 	const int getInstanceID() const { return instanceId; }
 	const DataObject& getObjectRef() const { return Object; }
 	const vector<double>& getDataStore() const { return dataStore; }
+	const vector<string>& getNameStore() const { return nameStore; }
 	DataObject* getRefObjAdd() { return &Object; }
 	const double getKey() const;
 	double getProbability();
 
 	void updateDS(vector<double>&);
+	void updateNS(vector<string>&);
 
 	/*R1: Lesser value preferred*/
 	bool isDominatedBy(DataInstance&);
@@ -87,5 +91,6 @@ struct Rectangle{
 	Rectangle(DataInstance& lowerEnd, DataInstance& upperEnd): lowerEnd(lowerEnd), upperEnd(upperEnd) {}
 };
 
+typedef vector<DataObject*> objectSet;
 
 #endif

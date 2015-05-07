@@ -1,6 +1,7 @@
 #ifndef KD_TREE_H
 #define KD_TREE_H
 
+#include <iostream>
 #include <Data.h>
 #include <algorithm>
 #include <unordered_set>
@@ -55,15 +56,15 @@ public:
 
 
 kdTree::kdTree(vector<DataInstance>& points): points(points), root(NULL) {
-	cout << "Initializing the tree ...." << endl;
+	// cout << "Initializing the tree ...." << endl;
 	root = NULL;
 	if(points.size()!=0) {
 		for(int i=0;i<points.size();i++)
 			indices.push_back(i);
 		numAttr = points[0].getDataStore().size();
-			cout << "  number of attributes: " << numAttr << endl;
-			cout << "  number of points: " << points.size() << endl;
-		cout << "Building kd-tree...." << endl;
+		// 	cout << "  number of attributes: " << numAttr << endl;
+		// 	cout << "  number of points: " << points.size() << endl;
+		// cout << "Building kd-tree...." << endl;
 		root = buildTree(0, indices.size()-1, 0);
 	}
 }
@@ -150,6 +151,7 @@ struct kdTree::Query {
 		report(root->right);
 	}
 	void searchIn(TreeNode* root) {
+		if(root==NULL) return;
 		if(root->isLeaf()) {
 			// cout << "Searching in Leaf " << root->splitIndex << endl;
 			DataInstance& point = points[root->splitIndex];
@@ -189,7 +191,7 @@ struct kdTree::Query {
 
 vector<int>& kdTree::searchR(Rectangle& R) {
 	Query *object = new Query(R, points);
-	cout << "Searching in kd-tree...." << endl;
+	// cout << "Searching in kd-tree...." << endl;
 	object->searchIn(root);
 	// vector<int>* ans = new vector<int>();
 	// *ans = object.ans;
@@ -198,13 +200,14 @@ vector<int>& kdTree::searchR(Rectangle& R) {
 }
 
 void _printTree(kdTree::TreeNode *root, vector<DataInstance>& points) {
+	if(root==NULL) return;
 	if(root->isLeaf()) {
 		DataInstance& point = points[root->splitIndex];
-		cout << "Leaf: " << root->splitIndex << endl;
+//		cout << "Leaf: " << root->splitIndex << endl;
 		point.printDataInstance();
 		return;
 	}
-	cout << "Non-Leaf: " << root->splitIndex << endl;
+//	cout << "Non-Leaf: " << root->splitIndex << endl;
 		root->MBBmin.printDataInstance();
 		root->MBBmax.printDataInstance();
 	_printTree(root->left, points);

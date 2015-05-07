@@ -1,0 +1,61 @@
+{
+	"objects": [
+		{
+			"instances": [
+				{
+					"distance": 4,
+					"time": 2,
+					"Weight": 30
+				},
+				{
+					"distance": 3,
+					"time": 2,
+					"Weight": 40
+				},
+				{
+					"distance": 2,
+					"time": 3,
+					"Weight": 30
+				}
+			]
+		},
+		{
+			"instances": [
+				{
+					"distance": 1,
+					"time": 1,
+					"Weight": 10
+				},
+				{
+					"distance": 3,
+					"time": 1,
+					"Weight": 80
+				},
+				{
+					"distance": 1,
+					"time": 4,
+					"Weight": 10
+				}
+			]
+		},
+		{
+			"instances": [
+				{
+					"distance": 5,
+					"time": 1,
+					"Weight": 20
+				},
+				{
+					"distance": 1,
+					"time": 2,
+					"Weight": 60
+				},
+				{
+					"distance": 4,
+					"time": 1,
+					"Weight": 20
+				}
+			]
+		}
+	]
+}

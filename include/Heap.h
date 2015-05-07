@@ -1,6 +1,7 @@
 #ifndef CUSTOM_HEAP_H
 #define CUSTOM_HEAP_H
 
+#include <iostream>
 #include <Data.h>
 #include <algorithm>
 
@@ -8,7 +9,9 @@ using namespace std;
 
 class Heap {
 private:
+	vector<int> indices;
 	vector<DataInstance>& instances;
+	int currentIndex;
 public:
 	struct lower;
 	Heap(vector<DataInstance>&);
@@ -17,36 +20,62 @@ public:
 	DataInstance& top();
 	void pop();
 	void push(DataInstance&);
+	void printHeap();
 	~Heap() {}
 };
 
 struct Heap::lower {
-	bool operator()(const DataInstance& i1, const DataInstance& i2) {
-		return (i1.getKey())>(i2.getKey());
+	vector<DataInstance>& instances;
+	lower(vector<DataInstance>& instances): instances(instances) {}
+
+	bool operator()(const int& i1, const int& i2) {
+		return instances[i1].getKey() > instances[i2].getKey();
 	}
-}lowerObject;
+};
 
 Heap::Heap(vector<DataInstance>& instances): instances(instances) {
-	cout << "Initializing the Heap ...." << endl;
-	std::make_heap(instances.begin(), instances.end(), lowerObject);
+	indices.resize(instances.size());
+	// cout << "Initializing the Heap ...." << endl;
+	for(currentIndex = 0; currentIndex<instances.size(); currentIndex++) {
+		indices[currentIndex] = currentIndex;
+	}
+	std::make_heap(indices.begin(), indices.end(), lower(instances));
+	// cout << "make" << endl;
+	// printHeap();
 }
 
 bool Heap::isEmpty() {
-	return instances.size()==0;
+	return indices.size()==0;
 }
 
 DataInstance& Heap::top() {
-	instances.front();
+	// cout << "top" << endl;
+	// printHeap();
+	return instances[indices.front()];
 }
 
 void Heap::pop() {
-	std::pop_heap(instances.begin(), instances.end(), lowerObject);
-	instances.pop_back();
+	std::pop_heap(indices.begin(), indices.end(), lower(instances));
+	indices.pop_back();
+	// cout << "pop" << endl;
+	// printHeap();
 }
 
 void Heap::push(DataInstance& newInstance) {
+	cout << "Pushed instance .. " << endl;
+	newInstance.printDataInstance();
 	instances.push_back(newInstance);
-	std::push_heap(instances.begin(), instances.end(), lowerObject);
+	indices.push_back(currentIndex++);
+	std::push_heap(indices.begin(), indices.end(), lower(instances));
+	// cout << "push" << endl;
+	// printHeap();
+}
+
+void Heap::printHeap() {
+	// return;
+	cout << "Current Heap state" << endl;
+	for(int i=0;i<indices.size();i++)
+		instances[indices[i]].printDataInstance();
 }
 
 #endif

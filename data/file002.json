@@ -67,12 +67,12 @@
 				},
 				{
 					"distance": 30,
-					"time": 5.1,
+					"time": 2.1,
 					"Weight": 80
 				},
 				{
 					"distance": 45,
-					"time": 6.0,
+					"time": 3.0,
 					"Weight": 10
 				}
 			]
@@ -83,8 +83,12 @@
 					"distance": 10,
 					"time": 2.0,
 					"Weight": 10
-				}
-			]
+				},
+				{
+					"distance": 9,
+					"time": 2.0,
+					"Weight": 10
+				}			]
 		}
 	]
 }
