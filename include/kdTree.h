@@ -2,9 +2,10 @@
 #define KD_TREE_H
 
 #include <iostream>
-#include <Data.h>
 #include <algorithm>
 #include <unordered_set>
+
+#include <Data.h>
 
 using namespace std;
 

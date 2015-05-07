@@ -51,7 +51,7 @@ void Skyline::findSkyline(double p) {
 	string outFileName = "./../data/skyline_data/result.json";
 	objectSet& Skyline = p_BottomUp(data, p);
 	cout << Skyline.size() << endl;
-	// writeData(outFileName, Skyline);
+	writeData(outFileName, Skyline);
 }
 
 void Skyline::findSkyline(double p, int k) {}

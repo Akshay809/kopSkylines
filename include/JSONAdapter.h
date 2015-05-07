@@ -71,7 +71,7 @@ public:
 	}
 	void writeKeyValuePair(string key, double value) {
 		/* Key: value, */
-		outfile << "\t\t\t" << key << ": " << value << "," << endl;
+		outfile << "\t\t\t\"" << key << "\": " << value << "," << endl;
 	}
 	void writeNextInstance(DataInstance& I) {
 		/* { */
