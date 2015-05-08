@@ -12,82 +12,84 @@ class DataInstance;
 
 typedef vector<double>::iterator DataStoreIterator;
 
-
 class DataInstance {
 private:
-	int instanceId;
-	DataObject& Object;
-	vector<double> dataStore;
-	vector<string> nameStore;
 public:
-	/*Write updated copy constructor, same id instances are getting generated through copy*/
-	int weight;
+	const int instanceId;		
+	const DataObject& Object;		/*Referred object*/
+	/*Only initialized once*/
 
-	static int totalInstances;
-	static DataInstance Origin;
+	const int weight;					/*For occurence probability*/
+	const vector<string> nameStore;		/*Keys*/
+	const vector<double> dataStore;		/*Values*/
+	/*A1: assuming values are in the same order and no missing values*/
 
+	static int totalInstances;		/*To assign new instance ID*/
+	static DataInstance Origin;		/*Default(1st) and best instance*/
+
+
+	/*General purpose constructors*/
 	DataInstance(DataObject& Object): Object(Object), instanceId(++totalInstances), weight(0) {}
-	DataInstance(DataObject& Object, int weight): Object(Object), instanceId(++totalInstances), weight(weight) {}
+	DataInstance(DataObject& Object, int weight, vector<string> nameStore, vector<double> dataStore): Object(Object), instanceId(++totalInstances), weight(weight), nameStore(nameStore), dataStore(dataStore) {}
 
-	int getObjectID();
-	int getInstanceID() { return instanceId; }
-	const int getInstanceID() const { return instanceId; }
-	const DataObject& getObjectRef() const { return Object; }
-	const vector<double>& getDataStore() const { return dataStore; }
-	const vector<string>& getNameStore() const { return nameStore; }
-	DataObject* getRefObjAdd() { return &Object; }
-	const double getKey() const;
-	double getProbability();
+	/*Overridden copy constructor and assignment operator*/
+	DataInstance(const DataInstance&);
+	DataInstance& operator= (const DataInstance&);
 
-	void updateDS(vector<double>&);
-	void updateNS(vector<string>&);
+	int getObjectID() const;
+	const DataObject* getRefObjAdd() const { return &Object; }
+
+	double getKey() const;
+	double getProbability() const;
 
 	/*R1: Lesser value preferred*/
-	bool isDominatedBy(DataInstance&);
-	bool isDominatedBy(vector<DataInstance>&);
+	bool isDominatedBy(const DataInstance&) const;
+	bool isDominatedBy(const vector<DataInstance>&) const;
+	bool operator==(const DataInstance& I) const { return dataStore==I.dataStore; }
 
-	DataInstance& operator= (const DataInstance&);
-	bool operator==(const DataInstance& I) { return dataStore==I.dataStore; }
+	/*Non-constant functions*/
+		void minimizeWRT(const DataInstance&);
+		void maximizeWRT(const DataInstance&);
+		void minimizeDS();
 
-	void minimizeWRT(DataInstance&);
-	void maximizeWRT(DataInstance&);
-	void minimizeDS();
-
-	void printDataInstance();
+	void printDataInstance() const;
 };
 
 class DataObject {
 private:
-	int id, objectWeight;
-	vector<DataInstance> instances;
-	/*A1: assuming values are in the same order and no missing values*/
+	vector<DataInstance> instances;		/*instances of this DataObject*/
+	DataInstance Umin, Umax;			/*Best and worst possible form*/
+	int objectWeight;					/*To compute occurence probability*/
 public:
-	DataInstance Umin, Umax;
+	const int id;
 
 	static int totalObjects;
 	static DataObject Origin;
 
 	DataObject(): id(++totalObjects), Umin(*this), Umax(*this), objectWeight(0) {}
 
-	int getID() { return id; }
-	int getObjectWeight() { return objectWeight; }
+	/*Overridden copy constructor and assignment operator*/
+	DataObject(const DataObject&);
+	DataObject& operator= (const DataObject&);
 
-	void updateCorners();
-	void updateMinimumCorner();
-	void updateMaximumCorner();
-
-	void addInstance(DataInstance&); /*Check for A1*/
-	void removeInstance(int);
-	void removeInstance(DataInstance&);
-
+	int getObjectWeight() const { return objectWeight; }
 	const vector<DataInstance>& getDataInstances() const { return instances; }
 
-	void printDataObject();
+	/*Non-constant functions*/
+		void updateCorners();
+		void updateMinimumCorner();
+		void updateMaximumCorner();
+
+		/*IMP: Use heap and not stack memory for creating new instance and use desctructors carefully*/
+		void addInstance(DataInstance&); /*Check for A1*/
+		void removeInstance(int);
+		void removeInstance(DataInstance&);
+
+	void printDataObject() const;
 };
 
 struct Rectangle{
-	DataInstance& lowerEnd;
-	DataInstance& upperEnd;
+	DataInstance &lowerEnd, &upperEnd;
 	Rectangle(DataInstance& lowerEnd, DataInstance& upperEnd): lowerEnd(lowerEnd), upperEnd(upperEnd) {}
 };
 
