@@ -11,7 +11,7 @@ int main(int argc, char const *argv[])
 	string Fname = argv[1];
 
 	Skyline S(Fname);
-	S.findSkyline(0.925);
+	S.findSkyline(0.54);
 
 	return 0;
 }

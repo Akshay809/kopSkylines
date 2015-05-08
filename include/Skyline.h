@@ -4,21 +4,26 @@
 #include <Data.h>
 #include <DataReader.h>
 #include <DataWriter.h>
+#include <Helper.h>
+
+#include <sstream>
+#include <string>
 
 using namespace std;
 
 /* full-skyline Algorithms*/
-objectSet& full_(objectSet&);
+objectSet& full_(objectSet&); /*naive-version*/
 
 /* k-Skyline Algorithms */
-objectSet& k_(objectSet&, int);
+objectSet& k_(objectSet&, int); /*naive-version*/
 
 /* p-Skyline Algorithms */
+objectSet& p_(objectSet&, double); /*naive-version*/
 objectSet& p_TopDown(objectSet&, double);
 objectSet& p_BottomUp(objectSet&, double);
 
 /* kop-Skyline Algorithms */
-objectSet& kop_(objectSet&, double, int);
+objectSet& kop_(objectSet&, double, int); /*naive-version*/
 
 
 class Skyline {
@@ -48,10 +53,11 @@ void Skyline::findSkyline() {}
 void Skyline::findSkyline(int k) {}
 
 void Skyline::findSkyline(double p) {
-	string outFileName = "./../data/skyline_data/result.json";
+	string baseName = fileBaseName(Fname);
+	baseName = "./../data/skyline_data/result_" + baseName;
 	objectSet& Skyline = p_BottomUp(data, p);
 	cout << Skyline.size() << endl;
-	writeData(outFileName, Skyline);
+	writeData(baseName, Skyline);
 }
 
 void Skyline::findSkyline(double p, int k) {}
