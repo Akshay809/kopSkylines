@@ -28,9 +28,11 @@ objectSet& kop_(objectSet&, double, int); /*naive-version*/
 
 class Skyline {
 private:
+	objectSet& Skyline;
 public:
-	string Fname;
-	objectSet& data;
+	const string Fname;
+	const objectSet &data;
+
 	Skyline(string file_name): Fname(file_name), data(readData(file_name)) {}
 
 	/*TODO: Add preference relation specification*/
@@ -44,6 +46,8 @@ public:
 	void findSkyline(double p);			//p-Skyline
 	void findSkyline(double p, int k);	//kop-Skyline
 
+	const objectSet& getSkyline() const { return Skyline; }
+
 	~Skyline() {
 	}
 };
@@ -53,11 +57,11 @@ void Skyline::findSkyline() {}
 void Skyline::findSkyline(int k) {}
 
 void Skyline::findSkyline(double p) {
-	string baseName = fileBaseName(Fname);
-	baseName = "./../data/skyline_data/result_" + baseName;
-	objectSet& Skyline = p_BottomUp(data, p);
-	cout << Skyline.size() << endl;
-	writeData(baseName, Skyline);
+	string outputName = fileBaseName(Fname);
+	outputName = "./../data/skyline_data/result_" + outputName;
+	Skyline = p_BottomUp(data, p);
+		cout << Skyline.size() << endl;
+	writeData(outputName, getSkyline());
 }
 
 void Skyline::findSkyline(double p, int k) {}

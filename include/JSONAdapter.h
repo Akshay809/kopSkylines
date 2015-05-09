@@ -47,70 +47,82 @@ private:
 	Document document;
 	Value DataObjects;
 	Value::ConstValueIterator NextObjectToRead;
+	map<string, int> AttributeIndex;
+	char * c_file;
 public:
 	int totalAttributes;
 	JSONReader(const string inputFile) : FileReader(inputFile) {
 		readFileToString();
 		document.Parse(c_file);	//Creates a DOM/SAX model of given file
 		totalAttributes = 0;
-		validateDataAndInitAttrList();
+		validateAndInit();
 	}
-	void validateDataAndInitAttrList();
+
+	void readFileToString();
+	void validateAndInit();
 	bool hasNextObject();
 	bool readNextObject(DataObject&);
-	// ~JSONReader();
+
+	~JSONReader() {
+		delete [] c_file;
+	}
 };
 
 // AttributeIndex
 
 class JSONWriter : public FileWriter {
 public:
+
 	JSONWriter(const string outputFile) : FileWriter(outputFile) {
-		/*Write: { "objects": [ */
 		outfile << "{ \"objects\": [" << endl;
 	}
-	void writeKeyValuePair(string key, double value) {
-		/* Key: value, */
+
+	void writeKeyValuePair(const string key, const double value) {
 		outfile << "\t\t\t\"" << key << "\": " << value << "," << endl;
 	}
-	void writeNextInstance(DataInstance& I) {
-		/* { */
+
+	void writeNextInstance(const DataInstance& I) {
 		outfile << "\t\t{" << endl;
-		/* writeAllKeyValuePairs() */
-		vector<double> dataStore = I.getDataStore();
-		vector<string> nameStore = I.getNameStore();
+		const vector<string>& nameStore = I.getNameStore();
+		const vector<double>& dataStore = I.getDataStore();
 		for(int i=0; i<dataStore.size(); i++)
 			writeKeyValuePair(nameStore[i], dataStore[i]);
-		/* 				}, */
 		outfile << "\t\t}," << endl;
 	}
-	void writeNextObject(DataObject& O) {
-		/* { "instances": [ */
+
+	void writeNextObject(const DataObject& O) {
 		outfile << "\t{ \"instances\": [" << endl;
-		/* writeAllNextInstances() */
-		vector<DataInstance> instances = O.getDataInstances();
-		for(vector<DataInstance>::iterator itr = instances.begin(); itr != instances.end(); ++itr) {
+		const vector<DataInstance>& instances = O.getDataInstances();
+		for(auto itr = instances.cbegin(); itr != instances.cend(); ++itr) {
 			writeNextInstance(*itr);
 		}
-		/* 				] }, */
 		outfile << "\t] }," << endl;
 	}
+
 	~JSONWriter() {
-		/*Write: 	] }*/
 		outfile << "] }\n";
 	}
 };
 
-void JSONReader::validateDataAndInitAttrList() {
+void JSONReader::readFileToString() {
+	string file, newLine;
+	while(getline(infile, newLine)) {
+		file = file + newLine + '\n';
+	}
+	c_file = new char[file.length()+1];
+	strcpy(c_file, file.c_str());
+}
 
-		if(!document.IsObject()) throw InvalidDataException("Express top most element as an object");
-		if(!document.HasMember("objects")) throw InvalidDataException("\"objects\", key value pair expected");
+void JSONReader::validateAndInit() {
 
-	DataObjects = document["objects"];
+	if(!document.IsObject()) throw InvalidDataException("Express top most element as an object");
+	if(!document.HasMember("objects")) throw InvalidDataException("\"objects\", key value pair expected");
 
-		if(!DataObjects.IsArray()) throw InvalidDataException("\"objects\": array value expected");
+		DataObjects = document["objects"];
 
-	NextObjectToRead = DataObjects.Begin();
+	if(!DataObjects.IsArray()) throw InvalidDataException("\"objects\": array value expected");
+
+		NextObjectToRead = DataObjects.Begin();
 
 	for (Value::ConstValueIterator object = DataObjects.Begin(); object != DataObjects.End(); ++object) {
 
@@ -163,8 +175,9 @@ bool JSONReader::readNextObject(DataObject& object) {
 		DataInstance newInstance(object);
 		const Value& instance = *instanceItr;
 
-		vector<double> newDataStore;
 		vector<string> newNameStore;
+		vector<double> newDataStore;
+
 		newDataStore.resize(AttributeIndex.size());
 		newNameStore.resize(AttributeIndex.size());
 
@@ -185,9 +198,8 @@ bool JSONReader::readNextObject(DataObject& object) {
 		}
 		if(insertCount<AttributeIndex.size()) throw InvalidDataException("Missing values");
 
-		newInstance.weight = itr->value.GetInt();
-		newInstance.updateDS(newDataStore);
-		newInstance.updateNS(newNameStore);
+		newInstance.setWeight(itr->value.GetInt());
+		newInstance.updateStoreTo(newNameStore, newDataStore);
 		object.addInstance(newInstance);
 	}
 	NextObjectToRead++;

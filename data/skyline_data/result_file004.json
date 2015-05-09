@@ -1,0 +1,30 @@
+{ "objects": [
+	{ "instances": [
+		{
+			"distance": 5,
+			"time": 1,
+		},
+		{
+			"distance": 1,
+			"time": 2,
+		},
+		{
+			"distance": 4,
+			"time": 1,
+		},
+	] },
+	{ "instances": [
+		{
+			"distance": 1,
+			"time": 1,
+		},
+		{
+			"distance": 3,
+			"time": 1,
+		},
+		{
+			"distance": 1,
+			"time": 4,
+		},
+	] },
+] }

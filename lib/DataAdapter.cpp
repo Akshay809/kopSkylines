@@ -14,16 +14,6 @@ void FileReader::readNextLine(vector<string> &fields, char delimiter) {
 	}
 }
 
-void FileReader::readFileToString() {
-	string file, newLine;
-	while(getline(infile, newLine)) {
-		file = file + newLine + '\n';
-	}
-	c_file = new char[file.length()+1];
-	strcpy(c_file, file.c_str());
-}
-
-
 void importData(FileReader& reader, vector<DataObject*>& data) {
 	while(reader.hasNextObject()) {
 		DataObject * obj = new DataObject();
@@ -32,7 +22,7 @@ void importData(FileReader& reader, vector<DataObject*>& data) {
 	}
 }
 
-void exportData(FileWriter& writer, vector<DataObject*>& skyline) {
-	for(vector<DataObject*>::iterator itr = skyline.begin(); itr != skyline.end(); ++itr)
+void exportData(FileWriter& writer, const vector<DataObject*>& skyline) {
+	for(auto itr = skyline.cbegin(); itr != skyline.cend(); ++itr)
 		writer.writeNextObject(**itr);
 }

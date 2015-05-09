@@ -1,20 +1,20 @@
-#include <Data.h>
 #include <iostream>
+
+#include <Data.h>
 
 using namespace std;
 
 int DataInstance::totalInstances = 0;
 DataInstance DataInstance::Origin(DataObject::Origin);
 
-int DataInstance::getObjectID() { return Object.getID(); }
 
-DataInstance::DataInstance(const DataInstance& I) {
-	
-}
+DataInstance::DataInstance(const DataInstance& I): Object(I.Object), instanceId(++totalInstances), weight(I.getWeight()), dataStore(I.getDataStore()) {}
 
 DataInstance& DataInstance::operator= (const DataInstance& I) {
 	if(this!=&I) {
 		/*Performming deep copy*/
+		// weight = I.getWeight();
+		nameStore = I.getNameStore();
 		dataStore = I.getDataStore();
 		/*Check for origin and minimize*/
 		if(this->instanceId==1)
@@ -23,30 +23,26 @@ DataInstance& DataInstance::operator= (const DataInstance& I) {
 	return *this;
 }
 
-const double DataInstance::getKey() const {
+int DataInstance::getObjectID() const {
+	return Object.id;
+}
+
+double DataInstance::getKey() const {
 	double key = 0;
 	for(int i=0; i<dataStore.size(); ++i)
 		key += dataStore[i];
 	return key;
 }
 
-double DataInstance::getProbability() { 
+double DataInstance::getProbability() const {
 	return ((double)weight)/Object.getObjectWeight();
 }
 
-void DataInstance::updateDS(vector<double>& newDataStore) { 
-	if(dataStore.size()==0 || dataStore.size()==newDataStore.size())
-		dataStore = newDataStore;
-}
+bool DataInstance::isDominatedBy(const DataInstance& I) const {
+	const vector<double>& dataStoreOfI = I.getDataStore();
 
-void DataInstance::updateNS(vector<string>& newNameStore) { 
-	if(nameStore.size()==0 || nameStore.size()==newNameStore.size())
-		nameStore = newNameStore;
-}
-
-bool DataInstance::isDominatedBy(DataInstance& I) {
-	vector<double> dataStoreOfI = I.getDataStore();
 	if(dataStoreOfI.size()!=dataStore.size()) return false;
+
 	for(int i = 0; i < dataStore.size(); ++i) {
 		if(dataStore[i] < dataStoreOfI[i])
 			return false;
@@ -58,31 +54,37 @@ bool DataInstance::isDominatedBy(DataInstance& I) {
 	return false;
 }
 
-bool DataInstance::isDominatedBy(vector<DataInstance>& set) {
-	vector<DataInstance>::iterator itr = set.begin();
-	while(itr!=set.end()) {
-		if(this->isDominatedBy(*itr++)) {
-			// this->printDataInstance();
-			// cout << "is dominated by" << endl;
-			// (itr-1)->printDataInstance();
+bool DataInstance::isDominatedBy(const vector<DataInstance>& set) const {
+	auto itr = set.cbegin();
+	while(itr!=set.cend()) {
+		if(isDominatedBy(*itr++))
 			return true;
-		}
 	}
 	return false;
 }
 
-void DataInstance::minimizeWRT(DataInstance& I) {
-	vector<double> dataStoreOfI = I.getDataStore();
-	DataStoreIterator itrI, itrU = dataStore.begin();
+void DataInstance::updateStoreTo(const vector<string>& names, const vector<double>& values) {
+	if(values.size()!=names.size())
+		throw UpdateLengthMismatchException("Number of Keys and Values differ");
+	nameStore = names;
+	dataStore = values;
+}
+
+void DataInstance::addPair(string key, double value) {
+	nameStore.push_back(key);
+	dataStore.push_back(value);
+}
+
+void DataInstance::minimizeWRT(const DataInstance& I) {
+	const vector<double>& dataStoreOfI = I.getDataStore();
 	for(int i = 0; i < dataStore.size(); ++i) {
 		if(dataStore[i] > dataStoreOfI[i])
 			dataStore[i] = dataStoreOfI[i];
 	}
 }
 
-void DataInstance::maximizeWRT(DataInstance& I) {
-	vector<double> dataStoreOfI = I.getDataStore();
-	DataStoreIterator itrI, itrU = dataStore.begin();
+void DataInstance::maximizeWRT(const DataInstance& I) {
+	const vector<double>& dataStoreOfI = I.getDataStore();
 	for(int i = 0; i < dataStore.size(); ++i) {
 		if(dataStore[i] < dataStoreOfI[i])
 			dataStore[i] = dataStoreOfI[i];
@@ -95,7 +97,7 @@ void DataInstance::minimizeDS() {
 	}
 }
 
-void DataInstance::printDataInstance() {
+void DataInstance::printDataInstance() const {
 	cout << "    Instance::ID: " << instanceId << endl;
 	cout << "    Instance::ObjectID: " << getObjectID() << endl;
 	cout << "    Instance::Weight: " << weight << endl;
@@ -103,9 +105,9 @@ void DataInstance::printDataInstance() {
 	cout << "    Instance::Object Memory Location: " << &Object << endl;
 	cout << "    Instance::DataStore Memory Location: " << &dataStore << endl;
 
-	DataStoreIterator itr = dataStore.begin();
+	auto itr = dataStore.cbegin();
 	cout << "       ";
-	while(itr!=dataStore.end()) {
+	while(itr!=dataStore.cend()) {
 		cout << *itr << " ";
 		itr++;
 	}

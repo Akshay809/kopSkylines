@@ -15,6 +15,8 @@ objectSet& readJSONData(const string inputFile) {
 	return *data;
 }
 
+objectSet& readXMLData(const string inputFile) {}
+
 objectSet& readData(const string inputFile) {
 	/*TODO: Identify the type of file and call appropriate reader function*/
 		return readJSONData(inputFile);

@@ -2,7 +2,6 @@
 #define DATA_ADAPTER_H
 
 #include <Data.h>
-#include <Exceptions.h>
 #include <cstring>
 #include <fstream>
 #include <sstream>
@@ -13,21 +12,19 @@ class FileReader {
 protected:
 	string inputFile;
 	ifstream infile;
-	map<string, int> AttributeIndex;
-	char * c_file;
 public:
 
 	FileReader(const string inputFile) : infile(inputFile.c_str()), inputFile(inputFile) {}
 
-	virtual	void validateDataAndInitAttrList() {}
+	virtual	void validateAndInit() = 0;
 
-			void readFileToString();
-	virtual bool hasNextLine() {}
+			bool hasNextLine() {}
 			void readNextLine(vector<string>&, char);
-	virtual bool hasNextObject() { return hasNextLine(); }
-	virtual bool readNextObject(DataObject&) {}
 
-	virtual void createDummyInstance(DataInstance&) {}
+	virtual bool hasNextObject() { return hasNextLine(); }
+	virtual bool readNextObject(DataObject& O) {}
+
+	virtual void createDummyInstance(DataInstance& I) {}
 
 	~FileReader() {
 		infile.close();
@@ -40,8 +37,10 @@ protected:
 	ofstream outfile;
 public:
 	FileWriter(const string outputFile) : outfile(outputFile.c_str()), outputFile(outputFile) {}
-	virtual void writeNextLine(DataInstance&) {}
-	virtual void writeNextObject(DataObject&) {}
+
+	virtual void writeNextLine(DataInstance& I) {}
+	virtual void writeNextObject(DataObject& O) {}
+
 	~FileWriter() {
 		outfile.close();
 	}

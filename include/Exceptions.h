@@ -9,3 +9,8 @@ class InvalidDataException : public domain_error {
 public:
 	InvalidDataException(string msg) : domain_error(msg) {}
 };
+
+class UpdateLengthMismatchException : public logic_error {
+public:
+	UpdateLengthMismatchException(string msg) : logic_error(msg) {}
+};
