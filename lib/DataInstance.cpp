@@ -8,6 +8,10 @@ DataInstance DataInstance::Origin(DataObject::Origin);
 
 int DataInstance::getObjectID() { return Object.getID(); }
 
+DataInstance::DataInstance(const DataInstance& I) {
+	
+}
+
 DataInstance& DataInstance::operator= (const DataInstance& I) {
 	if(this!=&I) {
 		/*Performming deep copy*/
