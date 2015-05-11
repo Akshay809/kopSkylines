@@ -71,7 +71,10 @@ void Skyline::findSkyline(int k) {
 
 void Skyline::findSkyline(double p) {
 	outputName = "./../data/skyline_data/result_P_" + outputName;
-	p_BottomUp(getData(), p, *SkylineSet);
+
+	p_(getData(), p, *SkylineSet);
+	// p_BottomUp(getData(), p, *SkylineSet);
+
 	cout << "Skyline found." << endl;
 	writeData(outputName, getSkyline());
 }
