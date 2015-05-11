@@ -8,7 +8,7 @@ int DataInstance::totalInstances = 0;
 DataInstance DataInstance::Origin(DataObject::Origin);
 
 
-DataInstance::DataInstance(const DataInstance& I): Object(I.Object), instanceId(++totalInstances), weight(I.getWeight()), dataStore(I.getDataStore()) {}
+DataInstance::DataInstance(const DataInstance& I): Object(I.Object), instanceId(++totalInstances), weight(I.getWeight()), dataStore(I.getDataStore()), nameStore(I.getNameStore()) {}
 
 DataInstance& DataInstance::operator= (const DataInstance& I) {
 	if(this!=&I) {

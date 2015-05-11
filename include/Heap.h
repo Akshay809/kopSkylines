@@ -7,10 +7,12 @@
 
 using namespace std;
 
+/*Imp Side effect: Heap operation changes the original array passed as reference, therefore pass a copy if the original is needed elsewhere */
+
 class Heap {
 private:
-	vector<int> indices;
 	vector<DataInstance>& instances;
+	vector<int> indices;
 	int currentIndex;
 public:
 	struct lower;
@@ -19,7 +21,7 @@ public:
 	bool isNotEmpty() {	return !isEmpty(); }
 	DataInstance& top();
 	void pop();
-	void push(DataInstance&);
+	void push(const DataInstance&);
 	void printHeap();
 	~Heap() {}
 };
@@ -61,7 +63,7 @@ void Heap::pop() {
 	// printHeap();
 }
 
-void Heap::push(DataInstance& newInstance) {
+void Heap::push(const DataInstance& newInstance) {
 	cout << "Pushed instance .. " << endl;
 	newInstance.printDataInstance();
 	instances.push_back(newInstance);

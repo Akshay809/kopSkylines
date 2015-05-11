@@ -1,6 +1,8 @@
 #ifndef KD_TREE_H
 #define KD_TREE_H
 
+/*Refer this: http://www.cs.uu.nl/docs/vakken/ga/slides5.pdf , for algorithm related details*/
+
 #include <iostream>
 #include <algorithm>
 #include <unordered_set>
@@ -11,30 +13,39 @@ using namespace std;
 
 class kdTree {
 private:
-	vector<DataInstance>& points;
+	const vector<DataInstance>& points;
 	vector<int> indices;
 	int numAttr;
 public:
 	class TreeNode;
-	TreeNode *root;
 	struct Query;
 	struct lower;
-	kdTree(vector<DataInstance>&);
+
+	TreeNode *root;
+
+	kdTree(const vector<DataInstance>&);
+
 	TreeNode* buildTree(int, int, int);
-	vector<int>& searchR(Rectangle&);
-	vector<int>& searchR(DataInstance& lowerEnd, DataInstance& upperEnd) {
-		Rectangle *R = new Rectangle(lowerEnd, upperEnd);
-		return searchR(*R);
+
+	const vector<int>& searchR(const Rectangle&);
+	const vector<int>& searchR(const DataInstance& lowerEnd, const DataInstance& upperEnd) {
+		Rectangle R(lowerEnd, upperEnd);
+		return searchR(R);
 	}
+
 	void printTree();
+	void _printTree(TreeNode *, const vector<DataInstance>&);
 	// Rectangle& region(TreeNode*);
-	~kdTree() {}
+
+	~kdTree();
 };
 
 struct kdTree::lower {
-	vector<DataInstance>& points;
+	const vector<DataInstance>& points;
 	int dim;
-	lower(vector<DataInstance>& points, int dim): points(points), dim(dim) {}
+
+	lower(const vector<DataInstance>& points, int dim): points(points), dim(dim) {}
+
 	bool operator()(const int i1, const int i2) {
 		return points[i1].getDataStore()[dim]<points[i2].getDataStore()[dim];
 	}
@@ -49,16 +60,21 @@ public:
 	DataInstance MBBmin, MBBmax;
 
 	TreeNode(int splitIndex): splitIndex(splitIndex), left(NULL), right(NULL), MBBmin(DataObject::Origin), MBBmax(DataObject::Origin) {}
+
 	bool isLeaf() {
 		/*splitIndex represents the index of the point*/
 		return left==NULL && right==NULL;
 	}
+
+	~TreeNode() {
+		delete left;
+		delete right;
+	}
 };
 
-
-kdTree::kdTree(vector<DataInstance>& points): points(points), root(NULL) {
+kdTree::kdTree(const vector<DataInstance>& points): points(points), root(NULL) {
 	// cout << "Initializing the tree ...." << endl;
-	root = NULL;
+	// root = NULL;
 	if(points.size()!=0) {
 		for(int i=0;i<points.size();i++)
 			indices.push_back(i);
@@ -106,28 +122,34 @@ kdTree::TreeNode* kdTree::buildTree(int startIndex, int endIndex, int depth) {
 	return root;
 }
 
-Rectangle& region(kdTree::TreeNode* root) {
+const Rectangle& region(kdTree::TreeNode* root) {
+	/*Some memory leak here, very small though*/
 	Rectangle *R = new Rectangle(root->MBBmin, root->MBBmax);
 	return *R;
 }
 
 struct kdTree::Query {
-	Rectangle& R;
+
+	const Rectangle& R;
+	const vector<DataInstance>& points;
 	vector<int> ans;
-	vector<DataInstance>& points;
-	Query(Rectangle& R, vector<DataInstance>& points): R(R), points(points) {}
-	bool containsPoint(DataInstance& point) {
+
+	Query(const Rectangle& R, const vector<DataInstance>& points): R(R), points(points) {}
+
+	bool containsPoint(const DataInstance& point) {
 		/* Condition for point-p not belonging to Rectangle-R                  */
 		/* p is better than the lower bound (p dominates the best-of-R), or,   */
 		/* p is worser than the upper bound (p is dominated by the worst-of-R) */
 		// return R.lowerEnd.isDominatedBy(point) || point.isDominatedBy(R.upperEnd));
 		return point.isDominatedBy(R.lowerEnd) && R.upperEnd.isDominatedBy(point);
 	}
-	bool containsRegion(Rectangle& region) {
+
+	bool containsRegion(const Rectangle& region) {
 		return containsPoint(region.lowerEnd) && containsPoint(region.upperEnd);
 		// return !(R.lowerEnd.isDominatedBy(region.lowerEnd) || region.upperEnd.isDominatedBy(R.upperEnd));
 	}
-	bool intersects(Rectangle& region) {
+
+	bool intersects(const Rectangle& region) {
 		return containsPoint(region.lowerEnd) || containsPoint(region.upperEnd) || (R.lowerEnd.isDominatedBy(region.lowerEnd) && region.upperEnd.isDominatedBy(R.lowerEnd)) ||
 		(R.upperEnd.isDominatedBy(region.lowerEnd) && region.upperEnd.isDominatedBy(R.upperEnd));
 /*		return !(
@@ -141,6 +163,7 @@ struct kdTree::Query {
 			);
 */
 	}
+
 	void report(TreeNode* root) {
 		// cout << "Reporting " << root->splitIndex << endl;
 		if(root->isLeaf()) {
@@ -151,11 +174,12 @@ struct kdTree::Query {
 		report(root->left);
 		report(root->right);
 	}
+
 	void searchIn(TreeNode* root) {
 		if(root==NULL) return;
 		if(root->isLeaf()) {
 			// cout << "Searching in Leaf " << root->splitIndex << endl;
-			DataInstance& point = points[root->splitIndex];
+			const DataInstance& point = points[root->splitIndex];
 			if(containsPoint(point)) {
 				// cout << "  Contains Point " << root->splitIndex << endl;
 				// cout << &point << endl;
@@ -190,20 +214,21 @@ struct kdTree::Query {
 	}
 };
 
-vector<int>& kdTree::searchR(Rectangle& R) {
-	Query *object = new Query(R, points);
+const vector<int>& kdTree::searchR(const Rectangle& R) {
 	// cout << "Searching in kd-tree...." << endl;
-	object->searchIn(root);
-	// vector<int>* ans = new vector<int>();
-	// *ans = object.ans;
-	// return *ans;
-	return object->ans;
+	Query object(R, points);
+	object.searchIn(root);
+
+	/*Some memory leak here also.*/
+	vector<int>* ans = new vector<int>;
+	*ans = object.ans;
+	return *ans;
 }
 
-void _printTree(kdTree::TreeNode *root, vector<DataInstance>& points) {
+void kdTree::_printTree(kdTree::TreeNode *root, const vector<DataInstance>& points) {
 	if(root==NULL) return;
 	if(root->isLeaf()) {
-		DataInstance& point = points[root->splitIndex];
+		const DataInstance& point = points[root->splitIndex];
 //		cout << "Leaf: " << root->splitIndex << endl;
 		point.printDataInstance();
 		return;
@@ -218,5 +243,10 @@ void _printTree(kdTree::TreeNode *root, vector<DataInstance>& points) {
 void kdTree::printTree() {
 	_printTree(root, points);
 }
+
+kdTree::~kdTree() {
+	delete root;
+}
+
 
 #endif

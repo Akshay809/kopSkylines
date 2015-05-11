@@ -22,7 +22,7 @@ void importData(FileReader& reader, vector<DataObject*>& data) {
 	}
 }
 
-void exportData(FileWriter& writer, const vector<DataObject*>& skyline) {
+void exportData(FileWriter& writer, const vector<const DataObject*>& skyline) {
 	for(auto itr = skyline.cbegin(); itr != skyline.cend(); ++itr)
 		writer.writeNextObject(**itr);
 }

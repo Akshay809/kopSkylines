@@ -39,7 +39,7 @@ public:
 	FileWriter(const string outputFile) : outfile(outputFile.c_str()), outputFile(outputFile) {}
 
 	virtual void writeNextLine(DataInstance& I) {}
-	virtual void writeNextObject(DataObject& O) {}
+	virtual void writeNextObject(const DataObject& O) {}
 
 	~FileWriter() {
 		outfile.close();
@@ -48,6 +48,6 @@ public:
 
 void importData(FileReader&, vector<DataObject*>&);
 
-void exportData(FileWriter&, vector<DataObject*>&);
+void exportData(FileWriter&, const vector<const DataObject*>&);
 
 #endif

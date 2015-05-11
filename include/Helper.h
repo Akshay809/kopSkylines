@@ -11,8 +11,6 @@ struct MatchSeperator {
 	}
 };
 
-string fileBaseName(const string& Fname) {
-	return string( std::find_if(Fname.rbegin(), Fname.rend(), MatchSeperator()).base(), Fname.end());
-}
+string fileBaseName(const string&);
 
 #endif

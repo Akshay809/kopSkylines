@@ -36,6 +36,8 @@
 #ifndef JSON_ADAPTER_H
 #define JSON_ADAPTER_H
 
+#include <map>
+
 #include <DataAdapter.h>
 #include "3rdParty/rapidjson/document.h"
 
@@ -85,8 +87,9 @@ public:
 		outfile << "\t\t{" << endl;
 		const vector<string>& nameStore = I.getNameStore();
 		const vector<double>& dataStore = I.getDataStore();
-		for(int i=0; i<dataStore.size(); i++)
+		for(int i=0; i<dataStore.size(); ++i) {
 			writeKeyValuePair(nameStore[i], dataStore[i]);
+		}
 		outfile << "\t\t}," << endl;
 	}
 

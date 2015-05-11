@@ -9,6 +9,9 @@
 
 using namespace std;
 
+/* ~10^3 objects, ~10^3 instances/object , ~10 attributes/instance*/
+/* ~200 bytes/instance, ~2*10^5 bytes/object, ~2*10^8 bytes/data */
+
 class DataObject;
 class DataInstance;
 
@@ -105,8 +108,8 @@ public:
 };
 
 struct Rectangle{
-	DataInstance &lowerEnd, &upperEnd;
-	Rectangle(DataInstance& lowerEnd, DataInstance& upperEnd): lowerEnd(lowerEnd), upperEnd(upperEnd) {}
+	DataInstance lowerEnd, upperEnd;
+	Rectangle(const DataInstance& lowerEnd, const DataInstance& upperEnd): lowerEnd(lowerEnd), upperEnd(upperEnd) {}
 };
 
 typedef vector<DataObject*> objectSet;

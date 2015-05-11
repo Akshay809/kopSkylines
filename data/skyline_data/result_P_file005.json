@@ -1,0 +1,68 @@
+{ "objects": [
+	{ "instances": [
+		{
+			"distance": 4,
+			"time": 4,
+		},
+		{
+			"distance": 4,
+			"time": 3,
+		},
+		{
+			"distance": 3,
+			"time": 4,
+		},
+		{
+			"distance": 3,
+			"time": 3,
+		},
+	] },
+	{ "instances": [
+		{
+			"distance": 2,
+			"time": 5,
+		},
+		{
+			"distance": 4,
+			"time": 3,
+		},
+		{
+			"distance": 4,
+			"time": 4,
+		},
+		{
+			"distance": 5,
+			"time": 4,
+		},
+	] },
+	{ "instances": [
+		{
+			"distance": 3,
+			"time": 4,
+		},
+		{
+			"distance": 4,
+			"time": 4,
+		},
+		{
+			"distance": 3,
+			"time": 3,
+		},
+		{
+			"distance": 4,
+			"time": 3,
+		},
+		{
+			"distance": 5,
+			"time": 3,
+		},
+		{
+			"distance": 3,
+			"time": 5,
+		},
+		{
+			"distance": 5,
+			"time": 5,
+		},
+	] },
+] }

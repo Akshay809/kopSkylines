@@ -8,18 +8,16 @@
 
 typedef vector<DataObject*> objectSet;
 
-objectSet& readJSONData(const string inputFile) {
-	objectSet * data = new objectSet;
+void readJSONData(const string inputFile, objectSet& data) {
 	JSONReader reader(inputFile);
-	importData(reader, *data);
-	return *data;
+	importData(reader, data);
 }
 
-objectSet& readXMLData(const string inputFile) {}
+void readXMLData(const string inputFile, objectSet& data) {}
 
-objectSet& readData(const string inputFile) {
+void readData(const string inputFile, objectSet& data) {
 	/*TODO: Identify the type of file and call appropriate reader function*/
-		return readJSONData(inputFile);
+		return readJSONData(inputFile, data);
 }
 
 #endif

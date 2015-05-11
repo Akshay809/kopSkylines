@@ -8,7 +8,7 @@
 
 typedef vector<DataObject*> objectSet;
 
-void writeJSONData(const string outputFile, const objectSet& Skyline) {
+void writeJSONData(const string outputFile, const vector<const DataObject*>& Skyline) {
 	JSONWriter writer(outputFile);
 	exportData(writer, Skyline);
 	return;
@@ -16,7 +16,7 @@ void writeJSONData(const string outputFile, const objectSet& Skyline) {
 
 objectSet& writeXMLData(const string inputFile) {}
 
-void writeData(const string outputFile, const objectSet& Skyline) {
+void writeData(const string outputFile, const vector<const DataObject*>& Skyline) {
 	/*TODO: Identify the type of file by its name and call appropriate writer function*/
 		return writeJSONData(outputFile, Skyline);
 }
