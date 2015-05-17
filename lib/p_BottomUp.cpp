@@ -13,7 +13,7 @@ void printInfo(vector<const DataObject*>& Skyline, unordered_set<int>& nonSkylin
 	cout << endl;
 
 	cout << "PLo: ";
-	for(int i=0; i< pLo.size(); i++)
+	for(int i=0; i< pLo.size(); i++) 
 		cout << pLo[i] << " ";
 	cout << endl;
 	cout << "PHi: ";
@@ -138,7 +138,7 @@ struct partitionObject {
 			else
 				layer[correctLayer].push_back(instances[*itr]);
 		}
-		printLayers();
+		// printLayers();
 	}
 };
 
@@ -177,7 +177,7 @@ double skylineProbabilityOfInstance(DataInstance& u, vector<const DataObject*>& 
 			if(u.isDominatedBy(v)) {
 				// u.printDataInstance();
 				// v.printDataInstance();
-				cout << "probability contri.. " << v.getProbability() << endl;
+				// cout << "probability contri.. " << v.getProbability() << endl;
 				_pu += v.getProbability();
 			}
 		}
@@ -233,13 +233,13 @@ void p_BottomUp(const objectSet& data, double p, vector<const DataObject*>& Skyl
 
 	while(H.isNotEmpty()) {
 		
-		printInfo(Skyline, nonSkylineIds, pHi, pLo, pMax, layerMax, weightLeft, currentLayer, indexOf);
+		// printInfo(Skyline, nonSkylineIds, pHi, pLo, pMax, layerMax, weightLeft, currentLayer, indexOf);
 		
 		DataInstance& u = H.top();
 		H.pop();
 
-		cout << "Instance popped" << endl;
-		u.printDataInstance();
+		// cout << "Instance popped" << endl;
+		// u.printDataInstance();
 
 		const DataObject* U = u.getRefObjAdd();
 		int indexOfU = indexOf[U];
@@ -252,7 +252,7 @@ void p_BottomUp(const objectSet& data, double p, vector<const DataObject*>& Skyl
 		if(u.isDominatedBy(Umaxs)) pu = 0;
 		else pu = skylineProbabilityOfInstance(u, DominatingObjectsOf[indexOfU]);
 
-		cout << "Skyline probability: " << pu << endl;
+		// cout << "Skyline probability: " << pu << endl;
 
 		vector<vector<DataInstance> >& layerOfU = layers[indexOfU];
 		int at = currentLayer[indexOfU];
@@ -260,7 +260,7 @@ void p_BottomUp(const objectSet& data, double p, vector<const DataObject*>& Skyl
 		if(isMin[indexOfU]) {
 
 			isMin[indexOfU] = false;
-			cout << "Min Object, partioning..." << endl;
+			// cout << "Min Object, partioning..." << endl;
 
 			if(pu>=p) {
 				/*partition instances of U to layers*/
@@ -285,7 +285,7 @@ void p_BottomUp(const objectSet& data, double p, vector<const DataObject*>& Skyl
 		else {
 			layerMax[indexOfU] = std::max(pu, layerMax[indexOfU]);
 			weightLeft[indexOfU] -= u.getWeight();
-			cout << "PLo compute.. " << pLo[indexOfU] << " " << u.getProbability() << " " << pu << endl;
+			// cout << "PLo compute.. " << pLo[indexOfU] << " " << u.getProbability() << " " << pu << endl;
 			pLo[indexOfU] += u.getProbability() * pu;
 		}
 

@@ -64,8 +64,8 @@ void Heap::pop() {
 }
 
 void Heap::push(const DataInstance& newInstance) {
-	cout << "Pushed instance .. " << endl;
-	newInstance.printDataInstance();
+	// cout << "Pushed instance .. " << endl;
+	// newInstance.printDataInstance();
 	instances.push_back(newInstance);
 	indices.push_back(currentIndex++);
 	std::push_heap(indices.begin(), indices.end(), lower(instances));
