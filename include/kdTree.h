@@ -137,6 +137,7 @@ struct kdTree::Query {
 	Query(const Rectangle& R, const vector<DataInstance>& points): R(R), points(points) {}
 
 	bool containsPoint(const DataInstance& point) {
+		if(R.lowerEnd.isDominatedBy(R.upperEnd)) return false;
 		/* Condition for point-p not belonging to Rectangle-R                  */
 		/* p is better than the lower bound (p dominates the best-of-R), or,   */
 		/* p is worser than the upper bound (p is dominated by the worst-of-R) */
@@ -145,11 +146,13 @@ struct kdTree::Query {
 	}
 
 	bool containsRegion(const Rectangle& region) {
+		if(R.lowerEnd.isDominatedBy(R.upperEnd) || region.lowerEnd.isDominatedBy(region.upperEnd)) return false;
 		return containsPoint(region.lowerEnd) && containsPoint(region.upperEnd);
 		// return !(R.lowerEnd.isDominatedBy(region.lowerEnd) || region.upperEnd.isDominatedBy(R.upperEnd));
 	}
 
 	bool intersects(const Rectangle& region) {
+		if(R.lowerEnd.isDominatedBy(R.upperEnd) || region.lowerEnd.isDominatedBy(region.upperEnd)) return false;
 		return containsPoint(region.lowerEnd) || containsPoint(region.upperEnd) || (R.lowerEnd.isDominatedBy(region.lowerEnd) && region.upperEnd.isDominatedBy(R.lowerEnd)) ||
 		(R.upperEnd.isDominatedBy(region.lowerEnd) && region.upperEnd.isDominatedBy(R.upperEnd));
 /*		return !(

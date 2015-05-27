@@ -170,17 +170,24 @@ double skylineProbabilityOfInstance(DataInstance& u, vector<const DataObject*>& 
 			const vector<int>& ans = Tv->searchR(R);
 		delete Tv;
 
+		// int count = 0;
+
 		double _pu = 0;
 		// cout << "Ans size " << ans.size() << endl;
 		for(int i=0; i<ans.size(); ++i) {
 			DataInstance& v = final_instances[ans[i]];
-			if(u.isDominatedBy(v)) {
+			/*If answers are wrong change this*/
+			// if(u.isDominatedBy(v)) {
 				// u.printDataInstance();
 				// v.printDataInstance();
 				// cout << "probability contri.. " << v.getProbability() << endl;
+				// count++;
 				_pu += v.getProbability();
-			}
+			// }
 		}
+
+		// if(ans.size()!=count) cout << "NO" << endl;
+
 		pu *= (1-_pu);
 		if(pu==0) return pu;
 	}
@@ -200,6 +207,10 @@ void p_BottomUp(const objectSet& data, double p, vector<const DataObject*>& Skyl
 		vector<int> currentLayer;
 		vector<int> currentLayerIndex;
 		vector<bool> isMin;
+
+		vector<double> p4min;
+		vector<int> processed;
+		vector<DataInstance> U_prime_maxs;
 
 	map<const DataObject*,int> indexOf;	/*Used for finding object's property value*/
 		int lastUsedIndex = -1;
@@ -221,12 +232,15 @@ void p_BottomUp(const objectSet& data, double p, vector<const DataObject*>& Skyl
 		currentLayer.push_back(0);
 		currentLayerIndex.push_back(0);
 		isMin.push_back(true);
+
+		p4min.push_back(1.0);
+		processed.push_back(0);
+		U_prime_maxs.push_back(DataInstance(DataObject::Origin));
 	}
 	// cout << "*******************************\n";
 
 	kdTree * T = new kdTree(Umins); // Build a kdTree to store all Umins
 		findDominatingObjects(Umaxs, DominatingObjectsOf, *T);
-	delete T;
 
 	Heap H(Umins); 	// Build a heap on instances, currently on Umin
 	/*SideEffect: Umins gets changed by heap operations, donot swap above two operation order*/
@@ -285,6 +299,7 @@ void p_BottomUp(const objectSet& data, double p, vector<const DataObject*>& Skyl
 		else {
 			layerMax[indexOfU] = std::max(pu, layerMax[indexOfU]);
 			weightLeft[indexOfU] -= u.getWeight();
+			if(p4min[indexOfU]>pu) p4min[indexOfU] = pu;
 			// cout << "PLo compute.. " << pLo[indexOfU] << " " << u.getProbability() << " " << pu << endl;
 			pLo[indexOfU] += u.getProbability() * pu;
 		}
@@ -298,6 +313,31 @@ void p_BottomUp(const objectSet& data, double p, vector<const DataObject*>& Skyl
 			currentLayerIndex[indexOfU] = 0;
 		}
 		pHi[indexOfU] = pLo[indexOfU] + pMax[indexOfU] * (((double)weightLeft[indexOfU])/U->getObjectWeight());
+
+		/*Pruning Rule 4*/
+		int UTotal = U->getDataInstances().size();
+		if(p4min[indexOfU] > 0 && ((UTotal-processed[indexOfU])/(double)UTotal) * p4min[indexOfU] < p) {
+
+			DataInstance& le = U_prime_maxs[indexOfU];
+			for (int i = 0; i < Umaxs.size(); ++i) {
+
+				if(i==indexOfU) continue;
+
+				DataInstance& ue = Umaxs[i];
+				Rectangle R(le, ue);
+
+				const vector<int>& ans = T->searchR(R);
+				for (int j = 0; j < ans.size(); ++j) {
+					nonSkylineIds.insert(data[ans[j]]->id);
+				}
+
+			}
+
+			p4min[indexOfU] = -1;
+		}
+		
+		U_prime_maxs[indexOfU].maximizeWRT(u);
+		processed[indexOfU]++;
 
 		if(pLo[indexOfU]>=p) {
 			Skyline.push_back(U);
@@ -317,4 +357,5 @@ void p_BottomUp(const objectSet& data, double p, vector<const DataObject*>& Skyl
 		currentLayerIndex[indexOfU]++;
 		// layerOfU[at].erase(itr);
 	}
+	delete T;
 }
