@@ -24,6 +24,7 @@ void p_BottomUp(const objectSet&, double, vector<const DataObject*>&);
 
 /* kop-Skyline Algorithms */
 void kop_(const objectSet&, double, int, vector<const DataObject*>&); /*naive-version*/
+void kop_BPR(const objectSet&, double, int, vector<const DataObject*>&); /*Bounding_Pruning_Refining-version*/
 
 
 class Skyline {
@@ -81,6 +82,12 @@ void Skyline::findSkyline(double p) {
 
 void Skyline::findSkyline(double p, int k) {
 	outputName = "./../data/skyline_data/result_KoP_" + outputName;
+
+	kop_(getData(), p, k, *SkylineSet);
+	// kop_BPR(getData(), p, k, *SkylineSet);
+
+	cout << "Skyline found." << endl;
+	writeData(outputName, getSkyline());
 }
 
 #endif

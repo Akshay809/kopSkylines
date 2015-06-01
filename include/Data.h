@@ -49,10 +49,17 @@ public:
 	double getKey() const;
 	double getProbability() const;
 	int getWeight() const { return weight; }
+	int getDim() const { return dataStore.size(); }
 
 	/*R1: Lesser value preferred*/
 	bool isDominatedBy(const DataInstance&) const;
 	bool isDominatedBy(const vector<DataInstance>&) const;
+
+	bool isKDominatedBy(const DataInstance&, int) const;
+	bool isKDominatedBy(const vector<DataInstance>&, int) const;
+
+	int maxDominate(const DataInstance&) const;
+
 	bool operator==(const DataInstance& I) const { return dataStore==I.dataStore; }
 
 	/*Non-constant functions*/
@@ -86,6 +93,7 @@ public:
 	DataObject(): id(++totalObjects), Umin(*this), Umax(*this), objectWeight(0) {}
 
 	int getObjectWeight() const { return objectWeight; }
+	int getInstancesCount() const { return instances.size(); }
 	const vector<DataInstance>& getDataInstances() const { return instances; }
 
 	const DataInstance& getUmin();

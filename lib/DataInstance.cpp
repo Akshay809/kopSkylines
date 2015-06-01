@@ -63,6 +63,57 @@ bool DataInstance::isDominatedBy(const vector<DataInstance>& set) const {
 	return false;
 }
 
+bool DataInstance::isKDominatedBy(const DataInstance& I, int k) const {
+	const vector<double>& dataStoreOfI = I.getDataStore();
+
+	if(dataStoreOfI.size()!=dataStore.size()) return false;
+
+	int atleastAsGood = k, better = 1;
+
+	for(int i = 0; i < dataStore.size(); ++i) {
+		if(dataStoreOfI[i] == dataStore[i])
+			atleastAsGood--;
+		else if(dataStoreOfI[i] < dataStore[i]) {
+			atleastAsGood--;
+			better--;
+		}
+	}
+
+	if(better<=0 && atleastAsGood<=0)
+		return true;
+	return false;
+}
+
+bool DataInstance::isKDominatedBy(const vector<DataInstance>& set, int k) const {
+	auto itr = set.cbegin();
+	while(itr!=set.cend()) {
+		if(isKDominatedBy(*itr++, k))
+			return true;
+	}
+	return false;
+}
+
+int DataInstance::maxDominate(const DataInstance& I) const {
+	const vector<double>& dataStoreOfI = I.getDataStore();
+
+	if(dataStoreOfI.size()!=dataStore.size()) return 0;
+
+	int atleastAsGood = 0, better = 0;
+
+	for(int i = 0; i < dataStore.size(); ++i) {
+		if(dataStore[i] == dataStoreOfI[i])
+			atleastAsGood++;
+		else if(dataStore[i] < dataStoreOfI[i]) {
+			atleastAsGood++;
+			better++;
+		}
+	}
+
+	if(better>0)
+		return atleastAsGood;
+	return 0;
+}
+
 void DataInstance::updateStoreTo(const vector<string>& names, const vector<double>& values) {
 	if(values.size()!=names.size())
 		throw UpdateLengthMismatchException("Number of Keys and Values differ");
