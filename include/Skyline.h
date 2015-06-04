@@ -83,8 +83,8 @@ void Skyline::findSkyline(double p) {
 void Skyline::findSkyline(double p, int k) {
 	outputName = "./../data/skyline_data/result_KoP_" + outputName;
 
-	kop_(getData(), p, k, *SkylineSet);
-	// kop_BPR(getData(), p, k, *SkylineSet);
+	// kop_(getData(), p, k, *SkylineSet);
+	kop_BPR(getData(), p, k, *SkylineSet);
 
 	cout << "Skyline found." << endl;
 	writeData(outputName, getSkyline());

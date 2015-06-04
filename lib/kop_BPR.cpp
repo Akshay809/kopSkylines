@@ -2,6 +2,8 @@
 #include <Data.h>
 #include <map>
 #include <unordered_set>
+#include <time.h>
+#include <iostream>
 
 using namespace std;
 
@@ -14,6 +16,12 @@ struct partitionObject {
 	partitionObject(int d, int *layerCount, int **layer): d(d), layerCount(layerCount), layer(layer) {}
 
 	void printLayers() {
+		for(int i = d; i >= 0; i--) {
+			cout << "Layer" << i << "\t";
+			for(int j=0; j<layerCount[i]; j++)
+				cout << layer[i][j] << " ";
+			cout << endl;
+		}
 	}
 
 	int getNextIndex() {
@@ -32,7 +40,12 @@ struct partitionObject {
 		return currentLayer;
 	}
 
+	void reset() {
+		currentLayer = d; currentOffset = 0;
+	}
+
 	void partition(const vector<DataInstance>& instances) {
+// cout << "Partioning" << endl;
 
 		currentLayer = d; currentOffset = 0;
 		for(int i = 0; i <= d; ++i)
@@ -51,14 +64,19 @@ struct partitionObject {
 			layerCount[k]++;
 			currentIndex++;
 		}
+
+		// printLayers();
 	}
 };
 
 
 void kop_BPR(const objectSet& data, double p, int k, vector<const DataObject*>& Skyline) {
 
+	clock_t tStart;
+	double executionTime = 0;
+
 	int n = data.size(), m = 0, d = 0;
-	if(n>0)	d = data[0].getUmin().getDim();
+	if(n>0)	d = data[0]->getUmin().getDim();
 
 		/*Object properties*/
 		vector<DataInstance> Umins, Umaxs;
@@ -86,16 +104,22 @@ void kop_BPR(const objectSet& data, double p, int k, vector<const DataObject*>& 
 
 
 	for(auto itr=data.cbegin(); itr!=data.cend(); ++itr) {
+
+// cout << "Evaluating next Object" << endl;
+
 		const DataObject* U = *itr;
 		int indexOfU = indexOf[U];
 		const vector<DataInstance>& instancesOfU = U->getDataInstances();
 
 		/*1. Check if Umin is k-dominated by any Vmax*/
-		if(Umins[indexOfU].isKDominatedBy(Umaxs))
+		if(Umins[indexOfU].isKDominatedBy(Umaxs, k))
 			continue;
+// cout << "\tNot completely k-dominated" << endl;
 
 		/*2. Layerize*/
 		P.partition(U->getDataInstances());
+
+		tStart = clock();
 
 		int U_m = U->getInstancesCount();
 
@@ -103,23 +127,27 @@ void kop_BPR(const objectSet& data, double p, int k, vector<const DataObject*>& 
 			for(int i=0;i<U_m;i++)
 				Pku[i] = 1;
 
-		int pMax = 0;
+		double pMax = 0;
 
 		for(auto it = data.cbegin(); it != data.cend(); ++it) {
+// cout << "\tComparing with another object" << endl;
 
 			const DataObject* V = *it;
 			int indexOfV = indexOf[V];
 
-			if(V==U || !(U->getUmax().isKDominatedBy(V->getUmin())))
+			if(V==U || !(U->getUmax().isKDominatedBy(V->getUmin(), k)))
 				continue;
 
-			double *Vdomu = new double*[U_m];
+// cout << "\tAnother object's best-case k-dominates my worst case, some possibility exists" << endl;
+
+			double *Vdomu = new double[U_m];
 				for(int i=0;i<U_m;i++)
 					Vdomu[i] = 0;
 
 			const vector<DataInstance>& instancesOfV = V->getDataInstances();
 
 			for(auto inst = instancesOfV.begin(); inst!= instancesOfV.end(); ++inst) {
+// cout << "\tFinding all instances of mine, dominated by this instance" << endl;
 
 				const DataInstance& v = *inst;
 
@@ -127,16 +155,23 @@ void kop_BPR(const objectSet& data, double p, int k, vector<const DataObject*>& 
 				for(int j=0;j<U_m;j++)
 					isDecided[j] = false;
 
-
+				P.reset();
 				int currentIndex = P.getNextIndex();
 				while(currentIndex!=-1) {
+// cout << "\tCurrent Index : " << currentIndex << endl;
 					int l = P.getCurrentLayer();
 
-					if(isDecided[currentIndex]) continue;
+					if(isDecided[currentIndex]) {
+						currentIndex = P.getNextIndex();
+						continue;
+					}
 					isDecided[currentIndex] = true;
 
 					int r = v.maxDominate(instancesOfU[currentIndex]);
-					if(r<k) continue;
+					if(r<k) {
+						currentIndex = P.getNextIndex();
+						continue;
+					}
 
 					Vdomu[currentIndex] += v.getProbability();
 
@@ -158,11 +193,22 @@ void kop_BPR(const objectSet& data, double p, int k, vector<const DataObject*>& 
 				Pku[i] *= (1-Vdomu[i]);
 				pMax += instancesOfU[i].getProbability() * Pku[i];
 			}
+
+/*cout << pMax << " " ;
+	for(int i=0;i<U_m;i++)
+		cout << Pku[i] << " ";
+	cout << endl;
+*/
 			if(pMax<p)
 				break;
 		}
 
 		if(pMax>=p)
 			Skyline.push_back(U);
+
+		executionTime += (double)(clock() - tStart)/CLOCKS_PER_SEC;
 	}
+
+	cout << p << " " << k << " " << Skyline.size() << " " << executionTime << endl;
+
 }

@@ -1,9 +1,13 @@
 /*naive-version of kOp-Skyline*/
 #include <Data.h>
+#include <time.h>
+#include <iostream>
 
 using namespace std;
 
 void kop_(const objectSet& data, double p, int k, vector<const DataObject*>& Skyline) {
+
+	clock_t tStart = clock();
 
 	for(auto itr = data.cbegin(); itr!=data.cend(); ++itr) {
 		/*For every object*/
@@ -47,4 +51,8 @@ void kop_(const objectSet& data, double p, int k, vector<const DataObject*>& Sky
 				Skyline.push_back(U);
 			}
 	}
+
+	double executionTime = (double)(clock() - tStart)/CLOCKS_PER_SEC;
+	cout << p << " " << k << " " << Skyline.size() << " " << executionTime << endl;
+
 }

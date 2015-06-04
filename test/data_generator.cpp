@@ -31,7 +31,7 @@ void generateData(int objects, int instancesBound, int attributes, string fileNa
 				outfile << "\t\t\t\"" << key << "\": " << value << "," << endl;
 			}
 
-			int weight = (rand()%21) + 20;
+			int weight = (rand()%10) + 1;
 			outfile << "\t\t\t\"Weight\": " << weight << endl;
 			
 			if(j==instances-1)

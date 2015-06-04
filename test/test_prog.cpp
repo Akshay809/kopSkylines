@@ -16,7 +16,8 @@ int main(int argc, char const *argv[])
 	ofstream outfile(resultFName.c_str());
 
 	double p;
-	cin >> p;
+	int k;
+	cin >> p >> k;
 	while(p>=0 && p<=1) {
 		string filesname = "./../FindSkyline.config";
 		ifstream infile(filesname);
@@ -24,14 +25,14 @@ int main(int argc, char const *argv[])
 		while(getline(infile, Fname)) {
 			clock_t tStart = clock();
 				Skyline S(Fname);
-				S.findSkyline(p);
+				S.findSkyline(p, k);
 			double executionTime = (double)(clock() - tStart)/CLOCKS_PER_SEC;
 			int SkylineSetSize = S.getSkyline().size();
 			outfile << Fname << " " << p << " " << SkylineSetSize << " " << executionTime << endl;
 		}
 
 		infile.close();
-		cin >> p;
+		cin >> p >> k;
 	}
 
 	outfile.close();
