@@ -64,10 +64,18 @@ public:
 
 void Skyline::findSkyline() {
 	outputName = "./../data/skyline_data/result_" + outputName;
+
+	full_(getData(), *SkylineSet); /*naive-version*/
+	cout << "Skyline found." << endl;
+	writeData(outputName, getSkyline());
 }
 
 void Skyline::findSkyline(int k) {
 	outputName = "./../data/skyline_data/result_K_" + outputName;
+
+	k_(getData(), k, *SkylineSet); /*naive-version*/
+	cout << "Skyline found." << endl;
+	writeData(outputName, getSkyline());
 }
 
 void Skyline::findSkyline(double p) {
@@ -75,7 +83,6 @@ void Skyline::findSkyline(double p) {
 
 	// p_(getData(), p, *SkylineSet);
 	p_BottomUp(getData(), p, *SkylineSet);
-
 	cout << "Skyline found." << endl;
 	writeData(outputName, getSkyline());
 }
@@ -85,7 +92,6 @@ void Skyline::findSkyline(double p, int k) {
 
 	// kop_(getData(), p, k, *SkylineSet);
 	kop_BPR(getData(), p, k, *SkylineSet);
-
 	cout << "Skyline found." << endl;
 	writeData(outputName, getSkyline());
 }
