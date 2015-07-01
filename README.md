@@ -1,166 +1,67 @@
 ## Directory structure:
-- **bin**
-	- Final executable program(s) goes here
-	- will include in gitignore later
-- **build**
-	- intermediate object files generated during compilation goes here
-	- will include in git ignore later
 - **data**
-	- Data source files needed by the program goes here
-	- all data format (including .dat, .csv, .xlsx, .json, .xml) are allowed, but only JSON-subset is supported currently
-- **include**: header files declaration goes here
-	- **rapidjson** - (sub-directory)
-		- header-only library
-		- Header files of "memory based JSON parser for c++"
-		- Source: https://github.com/miloyip/rapidjson
-	  - **Data.h**
-	  	- Includes declaration of in-memory based data-structures used by the program
-	  	- Objects defined
-	  		- **DataValue**
-	  			- abstract class
-			  	- Datavalue types currently implemented by extending the above class
-			  		- IntDataValue : public DataValue
-			  		- DoubleDataValue : public DataValue
-			  		- StringDataValue : public DataValue
-			  	- **Why this hierarchical structure with polymorphic reference and *not a Union instead*?**
-			  		- Main reason is to avoid the use of switch-case statements everywhere in the program, thereby making the current library implementaion more **easily extensible**
-			  		- Besides we get to define comparison rules for each type sepeartely, which includes *comparision rules for similar as well as non-similar types*
-			  			- **e.g.** comparing Hexadecimal type with Integer(Decimal) type
-			  	- **Properties** ( w.r.t. extended DataValue classes )
-			  		- Value
-			  		- TypeID (static member)
-			  		- TypeMinimum Value (static member)
-			  	- **Methods**
-			  		- **Note:** Relevant methods are declared virtual and are resolved at run-time
-			  		- compareWith(V)
-			  			- compares the current value with other value, of same or of different type
-			  			- define comparison rules in lib/DataValue.cpp
-			  			- missing values and different-type comparision (if rules not specified), makes values incomparable
-			  		- updateTo(V)
-			  			- updates current value, if possible, to the value of object V
-			  			- needed as 'Value' is an exclusive property of derived classes and we use base class reference
-					- minimize
-						- sets the value to minimum as per the MIN defined for that type
-					-	createCopy
-						- used like a copy constructor, only that the value object of the same type is constructed and returned *because this method is virtual*
-					-	isDominatedBy(DataInstance|instanceSet)
-						- Checks if instance is dominated by given instance or a set of instances
-					- get and update functions for DataValue properties
-	  		- **DataInstance**
-	  			- **Properties**
-	  				- unique instance id
-	  					- number of instance already created in whole world + 1
-	  				- ObjectReference
-	  					- of object for which this instance is constructed
-	  					- reverse relation is not implied
-	  						- Referred object may not include this instance
-	  				- Weight
-	  					- Used to compute occurence probability
-	  				- DataStore
-	  					- map of Attribute-Value pair
-	  						- Attribute
-	  							- string
-	  						- Value
-	  							- Pointer to a DataValue object
-	  					- Generic design: can have any number of attributes, with values of any type among the defined types
-	  			- **Construction**
-	  				- Requires the reference of the object for which this instance is being created
-	  				- Initializes id and properties
-	  			- **Methods**
-					  - isDominatedBy(I)
-						  - Checks if current instance is dominated by I
-						  - uses the "compareWith" function for every pair of DataValues corresponding to each attribute
-					    - **IMP: lesser_than is used as a preference function for every attribute **
-							  - however **definition of 'lesser_than' is subjective**
-							  - defined in lib/DataValue.cpp
-					  - minimize(maximize)WRT(some_instance)
-						  - updates current_instance as best(worst) of itself and the other instance
-						  - used in calculating Umin and Umax
-					  - minimizeDS
-						  - minimizes the current DataStore
-						  - sets every value in the DataStore of the current instance to the minimum value as defined for that type of Value
-						  - Used for constructing the DataInstanceOrigin
-					- isMinimumCornerOfU
-						- Checks if current instance is the minimum corner of the MBB of the object it refers to
-					- get and update functions for DataInstance properties
-	  			- **DataInstanceOrigin**
-	  				- First '0 weight' instance created, referring DataObjectOrigin
-	  				- static member
-	  				- has minimum value for each attribute
-	  		- **DataObject**
-	  			- **Properties**
-	  				- unique id: number of objects already created + 1
-	  				- list of DataInstances
-	  				- Object Weight
-	  					- sum of weights of all instances present
-	  				- Umin(Umax)
-	  					- Minimum(Maximum) corner of MBB of itself
-	  			- **Construction**
-	  				- No parameters required
-	  				- Initializes id and properties
-	  			- **Methods**
-	  				- addInstance
-	  					- Adds a "deep-copy" of the instance to the list
-	  					- updates the corners and object weight
-	  					- **TODO:** Update validation check for DataInstance(if needed) here, currently only weight and object reference of the instance are checked
-	  				- removeInstance
-	  					- remove by instance id
-	  					- update the corners and object weight
-					- update(get)Minimum(Maximum)Corner
-						- Updates/Returns the corners of the MBB of itself
-	  				- get and update functions for DataObject properties
-	  			- **DataObjectOrigin**
-	  				- First object created
-	  				- static member
-	  				- Referenced by DataInstanceOrigin 
-	  - **DataAdapter.h**
-	  	- Defines the interface for Reader and Writer objects
-	  		- Extend for specific data formats
-	  		- **Another extensibility feature:** Data input of any format can be easily supported by
-	  			- using/writing a data-format specific parser and
-	  			- defining the declared functions in the extended class definition
-	  	- Declaration of 'import' and 'export' functions
-	  - **JSONAdapter.h** | **XMLAdapter.h**
-	  	- Header only extended class definitions for respective Datatype
-	  	- **Please go through the described template of supported subset in the begining of these files(currently only JSON)**
-	  		- @ /include/JSONAdapter.h 
-	  - **DataReader.h**
-	  	- Identifies file format and call appropriate sub-routine
-	  - **Exceptions.h**
-	  	- Custom exception declaration
-	  - **Heap.h**
-	  	- Mention about Heap Interface, code currently available on 'skyline' and 'top-down' branches
-	  - **RTree.h**
-	  	- Mention about RTree Interface, code currently available on 'skyline' and 'top-down' branches
-	  - **Skyline.h**
-	  	- Mention about Skyline Interface, code currently available on 'skyline' and 'top-down' branches
-- **lib**
-	- implementations of interfaces/class-methods declared above
-	- Refactored individual components to reduce Code-Smell
-	- Directory structure
-		- DataAdapter.cpp
-		- DataValue.cpp
-		- DataInstance.cpp
-		- DataObject.cpp
-		- RTree.cpp
-		- Heap.cpp
-		- p_TopDown.cpp - Definition of functions specific to TopDown Algorithm
-		- p_BottomUp.cpp - Definition of functions specific to BottomUp Algorithm
-		- kop.cpp - Definition of functions specific to kop Algorithm
+    - Data Generators and configuration files
+    - Data source files (.dat, .csv, .xlsx, .json, .xml)
+- **include**: header files
+    - **Data.h**
+        - Interface definition of DataModel used
+    - **DataAdapter.h | JSONAdapter.h | XMLAdapter.h | DataReader.h | DataWriter.h**
+        - Data (many format) Read/Write related logic
+    - **Exceptions.h | Helper.h**
+        - Available across all header files
+    - **kdTree.h | Heap.h**
+        - Algorithm specific
+    - **Skyline.h**
+        - Interface definition of types of Skyline algorithms available/possible
+    - **rapidjson/**
+        - header-only library of "memory based JSON parser for c++"
+        - Source: https://github.com/miloyip/rapidjson
+- **lib**: implementations of interface/methods declared above
+    - **DataInstance.cpp | DataObject.cpp**
+        - implements Data.h
+    - **DataAdapter.cpp | Heap.cpp | kdTree.cpp | Helper.cpp**
+        - implements corresponding .h
+    - **full_naive.cpp | k_naive.cpp | p_naive.cpp | p_BottomUp.cpp | kop_naive.cpp | kop_BPR.cpp**
+        - TypeOfSkyline_TypeOfAlgorithm method implementation
 - **test**
-	- main programs(for test) directory
-	- **dataGenerator**
-		- To generate data according to different experimental needs
+    - Test programs and config
+    - result/
+- **Skyline.config**
+    - Details about type_of_algorithm to be used for a type_of_skyline
+    - **Needed to build tests**
+- **.depend | .tmp**
+    - Autogenerated files
 - **Makefile**
-	- currently defined the structure, will correct it on completion
-	- To compile code currently use 
-		- in build directory
-			- g++ -c ./../lib/DataObject.cpp -I ./../include/
-			- g++ -c ./../lib/DataInstance.cpp -I ./../include/
-			- g++ -c ./../lib/DataValue.cpp -I ./../include/
-			- g++ -c ./../test/test_prog.cpp -I ./../include/
-		- in bin directory
-			- g++ -o test_prog ./../build/DataValue.o ./../build/DataInstance.o ./../build/DataObject.o ./../build/DataAdapter.o ./../build/test_prog.o
-			- To Run: ./test_prog ./../data/file002.json
+    - Current list of Tasks directly used
+        - compile - Build all object files
+        - tests - Build all test programs
+        - config - Generate Skyline.config's template, Manual editing needed/compulsory
+        - data - Build Data generators
+        - clean/cleanData - For all object or executable files / For all DataSource files
 - **README.md**
-	- this file
+    - this file
+
+## Instructions to write test programs / use implemented skyline algorithms:
+It is a very easy to use library, only three steps required.
+
+1. include "Skyline.h"
+2. Construct a Skyline object, pass as parameters the data source file name followed by output directory name
+3. Call findSkyline method of above object, pass all the parameters required depending on type of skyline. Check exact order in Skyline.h
+
+## Execution instructions:
+1. *make clean* - Cleans all executable/object files in entire directory
+2. *make cleanData (optional)* - Cleans all data source files, if any
+3. *make compile* - Builds all source files inside lib/
+4. *make config* - generates Skyline.config template, editing **needed/compulsory**
+5. Edit Skyline.config file. Leave only a single implementation name per skyline type. e.g.
+    - leave exactly one name from p_naive and p_BottomUp
+6. *make tests* - Builds all test programs inside test/
+7. *make data (optional)* - Builds all data generators inside data/
+8. move or generate data source files into data/ , (only .json format supported)
+9. run test programs inside test (provide appropriate inputs), results inside test/result/ (in .json format)
+
+## Instructions to write new skyline algorithms:
+1. Add a prototype of the method for this type of skyline in *Skyline.h*. But remember to add this new method only if it does not match an already existing type. e.g. a new algorithm to solve full skyline does not require a new prototype declaration.
+2. If a new skyline method is added, overload *findskyline()* method of the *Skyline* class
+3. Define the new skyline method in a separate file, inside lib/
+4. The Data model defined in Data.h can be used as it is, or can be extended as per requirement; More exceptions and helper functions can also be introduced. Also no need to handle read/write tasks separately.
