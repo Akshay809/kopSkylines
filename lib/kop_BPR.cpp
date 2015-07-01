@@ -70,7 +70,7 @@ struct partitionObject {
 };
 
 
-void kop_BPR(const objectSet& data, double p, int k, vector<const DataObject*>& Skyline) {
+void kopSkyline(const objectSet& data, double p, int k, vector<const DataObject*>& Skyline) {
 
 	clock_t tStart;
 	double executionTime = 0;

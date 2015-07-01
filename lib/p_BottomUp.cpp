@@ -194,7 +194,7 @@ double skylineProbabilityOfInstance(DataInstance& u, vector<const DataObject*>& 
 	return pu;
 }
 
-void p_BottomUp(const objectSet& data, double p, vector<const DataObject*>& Skyline) {
+void pSkyline(const objectSet& data, double p, vector<const DataObject*>& Skyline) {
 
 	unordered_set<int> nonSkylineIds;
 

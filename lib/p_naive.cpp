@@ -3,7 +3,7 @@
 
 using namespace std;
 
-void p_(const objectSet& data, double p, vector<const DataObject*>& Skyline) {
+void pSKyline(const objectSet& data, double p, vector<const DataObject*>& Skyline) {
 
 	for(auto itr = data.cbegin(); itr!=data.cend(); ++itr) {
 		/*For every object*/

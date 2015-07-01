@@ -1,5 +1,4 @@
 /*Find basic exception types information here: http://stdcxx.apache.org/doc/stdlibref/2-3.html*/
-
 #include <stdexcept>
 #include <string>
 

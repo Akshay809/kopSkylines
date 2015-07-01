@@ -5,7 +5,7 @@
 
 using namespace std;
 
-void kop_(const objectSet& data, double p, int k, vector<const DataObject*>& Skyline) {
+void kopSkyline(const objectSet& data, double p, int k, vector<const DataObject*>& Skyline) {
 
 	clock_t tStart = clock();
 

@@ -1,6 +1,12 @@
 build/*
 bin/*
 data/*
-*.pyc
-*.pyd
-*.pyo
+!data/*.config
+!data/*.cpp
+test/*
+!test/input
+!test/*.config
+!test/*.cpp
+.depend
+.tmp
+#Skyline.config
