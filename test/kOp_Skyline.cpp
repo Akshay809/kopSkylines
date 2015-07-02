@@ -12,14 +12,15 @@ int main(int argc, char const *argv[])
 
 	int k;
 	double p;
-	cin >> p >> k >> Fname;
+	cin >> p;
 
 	while(p>=0 && p<=1) {
+		cin >> k >> Fname;
 		// clock_t tStart = clock();
 			Skyline S(Fname, resultOut);
 			S.findSkyline(p, k);
 		// double executionTime = (double)(clock() - tStart)/CLOCKS_PER_SEC;
-		cin >> p >> k >> Fname;
+		cin >> p;
 	}
 
 	return 0;

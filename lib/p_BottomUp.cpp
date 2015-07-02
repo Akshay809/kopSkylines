@@ -2,6 +2,7 @@
 #include <string>
 #include <unordered_set>
 #include <map>
+#include <time.h>
 
 #include <kdTree.h>
 #include <Heap.h>
@@ -245,6 +246,8 @@ void pSkyline(const objectSet& data, double p, vector<const DataObject*>& Skylin
 	Heap H(Umins); 	// Build a heap on instances, currently on Umin
 	/*SideEffect: Umins gets changed by heap operations, donot swap above two operation order*/
 
+	clock_t tStart = clock();
+
 	while(H.isNotEmpty()) {
 		
 		// printInfo(Skyline, nonSkylineIds, pHi, pLo, pMax, layerMax, weightLeft, currentLayer, indexOf);
@@ -357,5 +360,9 @@ void pSkyline(const objectSet& data, double p, vector<const DataObject*>& Skylin
 		currentLayerIndex[indexOfU]++;
 		// layerOfU[at].erase(itr);
 	}
+
+	double executionTime = (double)(clock() - tStart)/CLOCKS_PER_SEC;
+	cout << p << " " << Skyline.size() << " " << executionTime << endl;
+
 	delete T;
 }

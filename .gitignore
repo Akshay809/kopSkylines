@@ -4,7 +4,7 @@ data/*
 !data/*.config
 !data/*.cpp
 test/*
-!test/input
+!test/input*
 !test/*.config
 !test/*.cpp
 .depend

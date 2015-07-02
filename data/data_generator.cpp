@@ -51,25 +51,15 @@ void generateData(int objects, int instancesBound, int attributes, string fileNa
 
 int main(int argc, char const *argv[])
 {
-	// if(argc!=2) return -1;
-	// string fileName = argv[1];
 
 	int oCount, iCount, aCount;
 	cin >> oCount >> iCount >> aCount;
-	/*while loop should go in a make file*/
-	/*read first line, build a data file, execute skyline programs and compare results and execution times*/
-
-	string SkylineConfigFile = "./../FindSkyline.config";
-	ofstream out(SkylineConfigFile.c_str());
 
 	while(oCount>0 && iCount>0 && aCount>0) {
-		string fileName = "./../data/data_" + to_string(oCount) + "_" + to_string(iCount) + "_" + to_string(aCount) + ".json";
-		out << fileName << endl;
+		string fileName = "data_" + to_string(oCount) + "_" + to_string(iCount) + "_" + to_string(aCount) + ".json";
 		generateData(oCount, iCount, aCount, fileName);
 		cin >> oCount >> iCount >> aCount;
 	}
-
-	out.close();
 
 	return 0;
 }

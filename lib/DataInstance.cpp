@@ -7,6 +7,9 @@ using namespace std;
 int DataInstance::totalInstances = 0;
 DataInstance DataInstance::Origin(DataObject::Origin);
 
+int DataObject::totalObjects = 0;
+DataObject DataObject::Origin;
+
 
 DataInstance::DataInstance(const DataInstance& I): Object(I.Object), instanceId(++totalInstances), weight(I.getWeight()), dataStore(I.getDataStore()), nameStore(I.getNameStore()) {}
 

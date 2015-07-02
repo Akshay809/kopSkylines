@@ -4,9 +4,6 @@
 
 using namespace std;
 
-int DataObject::totalObjects = 0;
-DataObject DataObject::Origin;
-
 const DataInstance& DataObject::getUmin() {
 	updateMinimumCorner();
 	return Umin;

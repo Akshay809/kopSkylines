@@ -177,11 +177,11 @@ void kopSkyline(const objectSet& data, double p, int k, vector<const DataObject*
 
 						for(int l_ = d-l; l_ <= r-k; l_++) {
 							for(int i=0;i<layerCount[l_];i++) {
-								cout << "Solved an extra question Mark" << endl;
 								int newIndex = layer[l_][i];
-								isDecided[newIndex] = true;
-
-								Vdomu[newIndex] += v.getProbability();
+								if(!isDecided[newIndex]) {
+									isDecided[newIndex] = true;
+									Vdomu[newIndex] += v.getProbability();
+								}
 							}
 						}
 

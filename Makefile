@@ -90,4 +90,14 @@ clean:
 	@echo " rm -f $(TSTEXCS)";rm -f $(TSTEXCS)
 	@echo " rm -f $(DATEXCS)";rm -f $(DATEXCS)
 
+cleanData:
+	@echo " Cleaning Data files... ";
+	@echo " rm -f $(DATA)/*.json";rm -f $(DATA)/*.json
+	@echo " rm -f $(DATA)/*.xml";rm -f $(DATA)/*.xml
+
+cleanResults:
+	@echo " Cleaning Results... ";
+	@echo " rm -f $(TEST)/result/*.json";rm -f $(TEST)/result/*.json
+	@echo " rm -f $(TEST)/result/*.xml";rm -f $(TEST)/result/*.xml
+
 .PHONY: clean data compile tests config all

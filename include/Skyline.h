@@ -35,7 +35,7 @@ private:
 public:
 	const string Fname, outDir;
 
-	Skyline(string file_name, string outDir): Fname(file_name), data(new objectSet), SkylineSet(new vector<const DataObject*>) {
+	Skyline(string file_name, string outDir): Fname(file_name), data(new objectSet), SkylineSet(new vector<const DataObject*>), outDir(outDir) {
 		readData(file_name, *data);
 		outputName = fileBaseName(Fname);
 		/*TODO: Can make this a friend function*/
