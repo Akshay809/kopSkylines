@@ -1,0 +1,12 @@
+build/*
+bin/*
+data/*
+!data/*.config
+!data/*.cpp
+test/*
+!test/input*
+!test/*.config
+!test/*.cpp
+.depend
+.tmp
+#Skyline.config
